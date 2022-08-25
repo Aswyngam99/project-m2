@@ -1,0 +1,17 @@
+<template>
+ <Navbar/> 
+</template>
+<script>
+import Navbar from '@/components/Navbar';
+export default {
+  components: {Navbar},
+  data: () => ({
+    //
+  }),
+};
+</script>
+<style scoped>
+.template {
+  background: none;
+}
+</style>

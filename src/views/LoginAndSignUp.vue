@@ -27,7 +27,7 @@
                       </v-row>
                      <v-btn :to="{name: 'home'}" color="indigo" dark block tile>Login</v-btn>
                       <h4 class="text-center grey--text mt-4 mb-3">Or</h4>
-                      <div class="d-flex jjustify-space-between align-center mx-10 mb-16">
+                      <div class="d-flex justify-space-between align-center mx-10 mb-16">
                         <v-btn depressed outlined color="grey">
                           <v-icon color="red">fab fa-google</v-icon>
                         </v-btn>
