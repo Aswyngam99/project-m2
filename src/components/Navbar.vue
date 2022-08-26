@@ -8,15 +8,11 @@
                 <span>Scenario editor</span>
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn text color="blublu">
+            <v-btn :to="{name: 'login'}" text color="blublu">
                 <span>Sign Out</span>
                 <v-icon right>mdi-exit-to-app</v-icon>
             </v-btn>
         </v-app-bar>
-        <!-- Form -->
-        <!-- <v-card flat tile class="herro"> 
-          <Edition/> 
-        </v-card>-->
        <!-- Footer -->
         <v-footer flat bottom padless app color="Rprimary">
             <v-col class="text-center blublu--text" cols="12">{{ new Date().getFullYear() }} — <strong>all rights reserved.</strong></v-col>

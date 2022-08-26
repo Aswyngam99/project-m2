@@ -6,10 +6,12 @@
             <v-col cols="4" md="2">
                 <h4 class="text-center blublu--text">Structured activities</h4>
                 <div class="d-flex justify-center align-center">
+                    <!-- bouton sequence -->
                 <v-btn v-ripple="{ class: 'primary--text' }" text color="#90CAF9" right>
                 <v-icon>mdi-trending-neutral</v-icon>
                 </v-btn> 
                 <v-btn v-ripple="{ class: 'primary--text' }" text color="#90CAF9" right>
+                    <!-- bouton flow -->
                 <v-icon>mdi-shuffle-disabled</v-icon>
                 </v-btn>
                 </div>
@@ -19,14 +21,17 @@
                 <h4 class="text-center blublu--text">Loop activities</h4>
                 <div class="d-flex justify-center align-center">
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialog2 = !dialog2">
+                    <!-- bouton ForEach -->
                 <v-icon>mdi-repeat</v-icon>
                 <!-- at click -> popup to enter a condition -->
                 </v-btn>
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialog2 = !dialog2">
+                    <!-- bouton While -->
                 <v-icon>mdi-sync</v-icon>
                 <!-- at click -> popup to enter a condition -->
                 </v-btn>
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialog2 = !dialog2">
+                    <!-- bouton RepeatUntil -->
                 <v-icon>mdi-reload</v-icon>
                 <!-- at click -> popup to enter a condition -->
                 </v-btn>
@@ -50,6 +55,7 @@
                 <h4 class="text-center blublu--text">Condition activity</h4>
                 <div class="d-flex justify-center align-center">
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialog2 = !dialog2">
+                    <!-- bouton IF -->
                 <v-icon>mdi-alert-circle-check-outline</v-icon>
                 <!-- at click -> popup to enter a condition -->
                 </v-btn>
@@ -59,18 +65,18 @@
             <v-col cols="4" md="2">
                 <h4 class="text-center blublu--text"> Communication activities </h4>
                 <div class="d-flex justify-center align-center">
+                    <!-- bouton delete -->
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9">
                 <v-icon>mdi-web-remove</v-icon></v-btn>
-
+                    <!-- bouton create/post -->
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9">
                 <v-icon>mdi-web-plus</v-icon></v-btn>
-
+                    <!-- bouton update/put -->
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9">
                 <v-icon>mdi-web-sync</v-icon></v-btn>
-
+                    <!-- bouton get -->
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9">
                 <v-icon>mdi-search-web</v-icon></v-btn>
-                
                 </div>
             </v-col>
         <v-divider vertical></v-divider>
@@ -83,7 +89,7 @@
         </v-row>
 
     <!-- temporal constraints -->
-        <v-btn fab color="#dd52a3" dark bottom left absolute @click="dialog = !dialog">
+        <v-btn fab color="#dd52a3" dark left absolute @click="dialog = !dialog">
             <v-icon>mdi-plus</v-icon>
         </v-btn>
         <v-dialog v-model="dialog" max-width="500px">
@@ -111,6 +117,16 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <!-- Affichage de la hierarchie -->
+        <v-row>
+            <v-col cols="12" md="6">
+                <v-card tile class="hierarchy elevation-6 mt-4"></v-card>
+            </v-col>
+            <v-col cols="12" md="6">
+                <v-card tile class="hierarchy elevation-6 mt-4"></v-card>
+            </v-col>
+        </v-row>
         </v-container>
   </v-form>
 </template>
@@ -136,7 +152,7 @@ export default ({
 .toolbox {
     background-color: #673AB7 ;
 }
-.objects {
+.hierarchy {
     background-color: #C5CAE9;
     height: 800px;
 }

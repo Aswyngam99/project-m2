@@ -15,7 +15,4 @@ export default {
 };
 </script>
 <style scoped>
-.template {
-  background: none;
-}
 </style>
