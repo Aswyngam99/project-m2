@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import LoginAndSignUp from '../views/LoginAndSignUp.vue'
 import HomePage from '../views/HomePage.vue'
-
+import Editor from '../views/Editor.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -15,6 +15,11 @@ const routes = [
     path: '/homepage',
     name: 'home',
     component: HomePage
+  },
+  {
+    path: '/edition',
+    name: 'edition',
+    component: Editor
   }
 ]
 

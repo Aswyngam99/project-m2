@@ -18,25 +18,38 @@
             <v-col cols="4" md="2">
                 <h4 class="text-center blublu--text">Loop activities</h4>
                 <div class="d-flex justify-center align-center">
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialog2 = !dialog2">
                 <v-icon>mdi-repeat</v-icon>
                 <!-- at click -> popup to enter a condition -->
                 </v-btn>
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialog2 = !dialog2">
                 <v-icon>mdi-sync</v-icon>
                 <!-- at click -> popup to enter a condition -->
                 </v-btn>
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialog2 = !dialog2">
                 <v-icon>mdi-reload</v-icon>
                 <!-- at click -> popup to enter a condition -->
                 </v-btn>
                 </div>
+                <v-dialog v-model="dialog2" max-width="500px">
+                    <v-card>
+                        <v-card-text>
+                            <h1 class="pa-4">Condition</h1>
+                            <v-text-field color="#673AB7" label="Condition" placeholder="Type a condition here ... " class="mt-8" outlined dense></v-text-field>
+                             <span class="red--text">* Could be a boolean or an expression</span>
+                        </v-card-text>
+                        <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" @click="dialog2 = false">Submit</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-col>
         <v-divider vertical></v-divider>
             <v-col cols="4" md="2">
                 <h4 class="text-center blublu--text">Condition activity</h4>
                 <div class="d-flex justify-center align-center">
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialog2 = !dialog2">
                 <v-icon>mdi-alert-circle-check-outline</v-icon>
                 <!-- at click -> popup to enter a condition -->
                 </v-btn>
@@ -63,7 +76,7 @@
         <v-divider vertical></v-divider>
         <v-col>
             <div class="d-flex justify-center align-center">
-            <v-select label="Choose an object" color="#90CAF9" dark></v-select>
+            <v-select :items="things" label="Choose an object" color="#90CAF9" dark></v-select>
             <v-icon dark color="#90CAF9">mdi-web</v-icon>
             </div>
         </v-col>
@@ -73,7 +86,6 @@
         <v-btn fab color="#dd52a3" dark bottom left absolute @click="dialog = !dialog">
             <v-icon>mdi-plus</v-icon>
         </v-btn>
-                 
         <v-dialog v-model="dialog" max-width="500px">
             <v-card>
                 <v-card-text>
@@ -102,18 +114,24 @@
         </v-container>
   </v-form>
 </template>
+<!-- JS ------------------------------------------------------------------------------------------------->
 <script>
 export default ({
     data() {
     return {
         TC: [{text: 'Before'}, {text: 'Between'}, {text: 'After'}],
         dialog: false,
-        Objects: [{text: 'Before'}, {text: 'Between'}, {text: 'After'}]
+        dialog2: false,
+        things: [
+                {text: 'PA1'}, 
+                {text: 'PA2'}, 
+                {text: 'PA3'}
+                ]
     }
    }
 })
 </script>
-
+<!-- CSS ------------------------------------------------------------------------------------------------>
 <style scoped>
 .toolbox {
     background-color: #673AB7 ;

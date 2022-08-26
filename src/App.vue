@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <v-main>
+  <v-app >
+    <v-main class="back">
       <router-view/>
     </v-main>
   </v-app>
@@ -16,4 +16,7 @@ export default {
 };
 </script>
 <style>
+.back {
+  background: url('../public/normal.jpg');
+}
 </style>

@@ -123,7 +123,7 @@
 </script>
 <style scoped>
 .v-container {
-     background: url('../../public/vecteezy_neon-background-1_dy1220.jpg')
+     background: url('../../public/normal.jpg')
     no-repeat center center fixed !important;
     background-size: cover;
 }
@@ -134,7 +134,7 @@
   border-bottom-right-radius: 300px !important;
 }
 .hero {
-  background: url('../../public/vecteezy_neon-background-1_dy1220.jpg');
+  background: url('../../public/normal.jpg');
   background-size: cover;
   height: 100vh;
 }

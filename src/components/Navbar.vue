@@ -1,5 +1,5 @@
 <template>
-    <nav> 
+    <nav class="herro"> 
         <!-- Header -->
         <v-app-bar flat app class="Rprimary">
             <v-app-bar-nav-icon dark @click="drawer = !drawer"></v-app-bar-nav-icon>
@@ -14,9 +14,9 @@
             </v-btn>
         </v-app-bar>
         <!-- Form -->
-        <v-card flat tile class="herro">
+        <!-- <v-card flat tile class="herro"> 
           <Edition/> 
-        </v-card>
+        </v-card>-->
        <!-- Footer -->
         <v-footer flat bottom padless app color="Rprimary">
             <v-col class="text-center blublu--text" cols="12">{{ new Date().getFullYear() }} — <strong>all rights reserved.</strong></v-col>
@@ -59,7 +59,7 @@ export default{
     return {
         drawer: false,
         links: [
-            {icon: 'mdi-file-document-edit-outline', text: 'Create', route:'/edition'},
+            {icon: 'mdi-file-document-edit-outline', text: 'Create', route: '/edition'},
             {icon: 'mdi-account-circle-outline', text: 'My Profile', route:'/profiles'},
              {icon: 'mdi-folder-outline', text: 'My Objects', route:'/objects'},
               {icon: 'mdi-folder-file-outline', text: 'My Scenarios', route:'/scenarios'},
