@@ -1,5 +1,11 @@
 <template>
- <Navbar/> 
+  
+ <div>
+  <Navbar/>
+  <v-card color="white">
+      <h1>lol</h1>
+  </v-card>
+ </div>
 </template>
 <script>
 import Navbar from '@/components/Navbar';
