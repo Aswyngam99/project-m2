@@ -1,5 +1,5 @@
 <template>
-    <nav class="herro"> 
+    <nav> 
         <!-- Header -->
         <v-app-bar flat app class="Rprimary">
             <v-app-bar-nav-icon dark @click="drawer = !drawer"></v-app-bar-nav-icon>
@@ -29,7 +29,7 @@
                 </p>
                 </v-col>
             </v-row>
-            <!-- Our Menu --------------------------------------------------------------------->
+            <!-- Our Menu --------------------------------------------------------------------------------------------------------->
            <v-list>
             <v-list-item dense class="lol" v-for="link in links" :key="link.text" router :to='link.route'>
                 <!-- icons --> 
@@ -42,7 +42,7 @@
                 </v-list-item-content>
             </v-list-item>
            </v-list>
-           <!-- ----------------------------------------------------------------------------- -->
+           <!-- ------------------------------------------------------------------------------------------------------------------>
         </v-navigation-drawer>
     </nav>
 </template>
@@ -70,14 +70,6 @@ export default{
 <style scoped>
 .lol:hover {
     background:#7f09e9 ;
-    /* #fd8294 pink tu connais*/
   }
-/*.lol:active {
-    background: yellow;
-  }*/
-/*.herro {
-  background: url('../../public/vecteezy_neon-background-1_dy1220.jpg');
-  background-size: cover;
-  height: 100vh;
-}*/
+
 </style>

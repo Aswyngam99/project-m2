@@ -15,8 +15,9 @@
                   <h4 class="text-center grey--text">Edit, create, organize and control your surrounding </h4>
                   <v-row align="center" justify="center">
                     <v-col cols="12" sm="8">
-                      <v-text-field label="Email" outlined dense color="indigo" autocomplete="false" class="mt-16"></v-text-field>
-                      <v-text-field label="Password" outlined dense color="indigo" autocomplete="false" type="password"></v-text-field>
+        <!------------------------------------------- LOGIN INPUTS ----------------------------------------------------------------->
+                      <v-text-field v-model="email" label="Email" outlined dense color="indigo" autocomplete="false" class="mt-16"></v-text-field>
+                      <v-text-field v-model="password" label="Password" outlined dense color="indigo" autocomplete="false" type="password"></v-text-field>
                        <v-row> 
                         <v-col>
                           <v-checkbox  input-value="true" value label="Remember me" class="mt-n1" color="pink"></v-checkbox>
@@ -69,11 +70,12 @@
                   <v-row align="center" justify="center">
                     <v-col cols="12" sm="8">
                       <v-row>
+            <!------------------------------------------- SIGNUP INPUTS ----------------------------------------------------------------->
                         <v-col cols="12" sm="6">
-                          <v-text-field label="First Name" outlined dense color="indigo" autocomplete="false" class="mt-4"></v-text-field>
+                          <v-text-field v-model="FirstName" label="First Name" outlined dense color="indigo" autocomplete="false" class="mt-4"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6">
-                          <v-text-field label="Last Name" outlined dense color="indigo" autocomplete="false" class="mt-4"></v-text-field>
+                          <v-text-field v-model="LastName" label="Last Name" outlined dense color="indigo" autocomplete="false" class="mt-4"></v-text-field>
                         </v-col>
                       </v-row>
                       <v-text-field label="Email" outlined dense color="indigo" autocomplete="false"></v-text-field>
@@ -108,6 +110,10 @@
 
   export default {
   data: () => ({
+    email:'',
+    password:'',
+    FirstName:'',
+    LastName:'',
     step: 1
   }),
   props: {
