@@ -289,7 +289,7 @@ export default ({
           ActList: [{id: 1,title: 'Scenario created !',name: this.processname ,Activity: 'process', dateDebut: this.dateCD, dateFin: this.dateCF}],
           newText: '',
           nextId: 2,
-          arr: [{nb: 1, Activity: 'process', state: 'none', ActivityName: '', dateDD:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateDF:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)}],
+          arr: [{nb: 1, Activity: 'process', state: 'none', ActivityName: '', dateDD:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateDF:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), duree: "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S"}],
           nextNb: 2,
           select: 'none',
           ActivityChoice: ['Simple','Sequential','Parallel','UnderCondition','InLoop'],
@@ -306,14 +306,26 @@ export default ({
       },
       //Create array of activities---------
       Addd: function(Act){
-        this.arr.push({
+        if(Act ==  ('get'||'put'||'post'||'delete')){
+          this.arr.push({
           nb: this.nextNb++,
           Activity: Act,
           state: this.select,
           ActivityName: this.ActivityName,
           dateDD: this.dateDD,
-          dateDF: this.dateDF
+          dateDF: this.dateDF,
+          duree: "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S"
         })
+        }else{
+           this.arr.push({
+          nb: this.nextNb++,
+          Activity: Act,
+          state: this.select,
+          ActivityName: this.ActivityName,
+          dateCD: this.dateCD,
+          dateCF: this.dateCF
+        })
+        }
         this.select= 'none';
       },
       //Add to hierarchy------------------
@@ -778,28 +790,40 @@ export default ({
           for(var i = 0; i<root.childNodes.length; i++){
             var element = root.childNodes[i];
             if(element.nodeType==1){
-              for(var j=0; j< element.childNodes.length; j++){
-                var element2 = element.childNodes[j];
-                if(element2.nodeType==1){
-                //element2 = extensionActivity / firstChild (put/get/post/delete)
-                var dd = element2.firstElementChild.getAttribute('DD');
-                element.setAttribute("DD",dd);
-                var df = element2.firstElementChild.getAttribute('DF');
-                element.setAttribute("DF",df);
-                }
+              var j = element.childNodes.length;
+              var element2 = element.childNodes[0];
+              if(element2.nodeType==1){
+                if(element2.hasAttribute("DD") == false){
+              //element2 = extensionActivity / firstChild (put/get/post/delete)
+              var dd = element2.firstElementChild.getAttribute('DD');
+              element.setAttribute("DD",dd);
+              element2 = element.childNodes[j-1];
+              var df = element2.firstElementChild.getAttribute('DF');
+              element.setAttribute("DF",df);
+              for(var t=0; t<element.childNodes.length; t++){
+                var dur = element2.firstElementChild.getAttribute('DUR');
+                console.log(dur);
               }
-                //console.log(element.getAttribute("name"));
+                }else{
+              //prendre directement l'element 
+              var dd = element2.getAttribute('DD');
+              element.setAttribute("DD",dd);
+              element2 = element.childNodes[j-1];
+              var df = element2.getAttribute('DF');
+              element.setAttribute("DF",df);
+                }
+            }
             }
           }
           var dd = root.firstElementChild.getAttribute('DD');
           var df = root.lastElementChild.getAttribute('DF');
           root.setAttribute("DD",dd);
           root.setAttribute("DF",df);
-
-          var xmlString = serializer.serializeToString(doc);
-          console.log(xmlString); 
           var durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+1+"S";
           var durrseq = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+10+"S";
+          var xmlString = serializer.serializeToString(doc);
+          console.log(xmlString); 
+          
           //calcul de duree --------------------------------------------------------------------------------
           const path1 = durrseq;
           const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
@@ -810,7 +834,6 @@ export default ({
           durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
           root.setAttribute("DUR",durr);
         },
-
          //SEQUENCE/FLOW----------------------------------------------------
         GenStr: function(ActivityType, ActivityName){
           var doc = document.implementation.createDocument("", "", null);
@@ -819,7 +842,7 @@ export default ({
               // create sequence
             var tmp = doc.createElement("sequence");
             tmp.setAttribute("name", ActivityName);
-            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("DUR", '');
             tmp.setAttribute("CD", this.dateCD);
             tmp.setAttribute("CF", this.dateCF);
             tmp.setAttribute("TC", this.Tcontrainte);
@@ -852,7 +875,7 @@ export default ({
             tmp.setAttribute("uri", this.URI);
             tmp.setAttribute("DD", this.arr[i].dateDD);
             tmp.setAttribute("DF", this.arr[i].dateDF);
-            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("DUR", this.arr[i].duree);
             tmp.setAttribute("InstantDebut", 0);
             extensionActivity.appendChild(tmp);
             break;
