@@ -28,15 +28,15 @@
                 <h4 class="text-center blublu--text">Inside Loop</h4>
                 <h6 class="text-center blublu--text">ForEach / While / RepeatUntil</h6>
                 <div class="d-flex justify-center align-center">
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition, TypeActivity = 'foreach'">
                     <!-- bouton ForEach -->
                 <v-icon>mdi-repeat</v-icon>
                 </v-btn>
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition, TypeActivity = 'while'">
                     <!-- bouton While -->
                 <v-icon>mdi-sync</v-icon>
                 </v-btn>
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition, TypeActivity = 'repeatuntil'">
                     <!-- bouton RepeatUntil -->
                 <v-icon>mdi-reload</v-icon>
                 </v-btn>
@@ -48,12 +48,12 @@
                 <h6 class="text-center blublu--text">if / ifelse</h6>
                 <div class="d-flex justify-center align-center">  
                 <!-- bouton IF -->
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition, TypeActivity = 'if'">
                 <v-icon>mdi-alert-circle-check-outline</v-icon>
 
                 </v-btn>
                 <!-- bouton IFElse -->
-                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition">
+                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcondition = !dialogcondition, TypeActivity = 'ifelse'">
                  <v-icon>mdi-alert-circle-check</v-icon>
                  </v-btn>
                 </div>
@@ -64,16 +64,16 @@
                 <h6 class="text-center blublu--text">delete / create / update / read</h6>
                 <div class="d-flex justify-center align-center">
                     <!-- bouton delete -->
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects, TypeActivity = 'delete'">
                 <v-icon>mdi-web-remove</v-icon></v-btn>
                     <!-- bouton create/post -->
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects, TypeActivity = 'post'">
                 <v-icon>mdi-web-plus</v-icon></v-btn>
                     <!-- bouton update/put -->
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects, TypeActivity = 'put'">
                 <v-icon>mdi-web-sync</v-icon></v-btn>
                     <!-- bouton get -->
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects, TypeActivity = 'get'">
                 <v-icon>mdi-search-web</v-icon></v-btn>
                 </div>
             </v-col>
@@ -99,29 +99,6 @@
             <v-text-field v-model="ActivityName" color="#673AB7" label="Name" placeholder="Type the activity name here ... " class="mt-8" outlined dense></v-text-field>
         <!-- Activity state ------------------------------------------- -->
             <v-select  v-model="select" :items="ActivityChoice" label="Select" single-line @change="selection()"></v-select>
-        <!-- Contraintes qui peuvent etre saisi ou rempli aleatoirement -->
-            <h1 class="pa-4">Temporal values :</h1>
-        <!-- DD -->
-            <v-menu v-model="menuDD" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field v-model="dateDD" label="DD" placeholder="Must start at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
-              </template>
-              <v-date-picker v-model="dateDD" @input="menuDD = false"></v-date-picker>
-            </v-menu>
-        <!-- DF -->
-             <v-menu v-model="menuDF" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field v-model="dateDF" label="DF" placeholder="Must end at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
-              </template>
-              <v-date-picker v-model="dateDF" @input="menuDF = false"></v-date-picker>
-            </v-menu>
-        <!-- DUR -->
-              <v-text-field v-model="year" color="#673AB7" type="number" label="Year" value="0"></v-text-field>
-              <v-text-field v-model="month" color="#673AB7" type="number" label="Month" value="0"></v-text-field>
-              <v-text-field v-model="day" color="#673AB7" type="number" label="Day" value="0"></v-text-field>
-              <v-text-field v-model="hours" color="#673AB7" type="number" label="Hours" value="0"></v-text-field>
-              <v-text-field v-model="minutes" color="#673AB7" type="number" label="Minutes" value="0"></v-text-field>
-              <v-text-field v-model="seconds" color="#673AB7" type="number" label="Seconds" value="0"></v-text-field>
        <!-- Contraintes obligatoires -->
              <h1 class="pa-4">Temporal constraints :</h1>
               <!-- CD -->
@@ -159,29 +136,6 @@
             <span class="red--text">* Could be a boolean or an expression</span>
         <!-- Activity state ------------------------------------------- -->
             <v-select  v-model="select" :items="ActivityChoice" label="Select" single-line @change="selection()"></v-select>
-        <!-- Contraintes qui peuvent etre saisi ou rempli aleatoirement -->
-            <h1 class="pa-4">Temporal values :</h1>
-        <!-- DD -->
-            <v-menu v-model="menuDD" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field v-model="dateDD" label="DD" placeholder="Must start at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
-              </template>
-              <v-date-picker v-model="dateDD" @input="menuDD = false"></v-date-picker>
-            </v-menu>
-        <!-- DF -->
-             <v-menu v-model="menuDF" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field v-model="dateDF" label="DF" placeholder="Must end at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
-              </template>
-              <v-date-picker v-model="dateDF" @input="menuDF = false"></v-date-picker>
-            </v-menu>
-        <!-- DUR -->
-              <v-text-field v-model="year" color="#673AB7" type="number" label="Year" value="0"></v-text-field>
-              <v-text-field v-model="month" color="#673AB7" type="number" label="Month" value="0"></v-text-field>
-              <v-text-field v-model="day" color="#673AB7" type="number" label="Day" value="0"></v-text-field>
-              <v-text-field v-model="hours" color="#673AB7" type="number" label="Hours" value="0"></v-text-field>
-              <v-text-field v-model="minutes" color="#673AB7" type="number" label="Minutes" value="0"></v-text-field>
-              <v-text-field v-model="seconds" color="#673AB7" type="number" label="Seconds" value="0"></v-text-field>
        <!-- Contraintes obligatoires -->
              <h1 class="pa-4">Temporal constraints :</h1>
               <!-- CD -->
@@ -213,12 +167,11 @@
       <v-dialog v-model="dialogobjects" max-width="500px">
           <v-card>
             <v-card-text>
-          <!-- LIST OF OBJECTS---------------------------------------------------------- -->
-          <v-select :items="things" label="Choose an object" color="#90CAF9" light return-object item-text="name"></v-select>
-          <!--Object Name------------------------------------------------------ -->
-          <h1 class="pa-4">Name</h1>
-            <v-text-field color="#673AB7" label="Condition" placeholder="Type a condition here ... " class="mt-8" outlined dense></v-text-field>
-          <h1 class="pa-4">Temporal values :</h1>
+          <!-- LIST OF OBJECTS (Object Name)-------------------------------------------------------------->
+          <v-select v-model="ActivityName" :items="things" label="Choose an object" color="#90CAF9" light item-text="name" @change="ob()"></v-select>
+          <!---------------------------------------------------------------------------------------------->
+          <!-- Activity state ------------------------------------------- -->
+            <v-select  v-model="select" :items="ActivityChoice" label="Select" single-line @change="selection()"></v-select>
                <!-- DD -->
             <v-menu v-model="menuDD" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
               <template v-slot:activator="{ on, attrs }">
@@ -226,7 +179,7 @@
               </template>
               <v-date-picker v-model="dateDD" @input="menuDD = false"></v-date-picker>
             </v-menu>
-        <!-- DF -->
+              <!-- DF -->
              <v-menu v-model="menuDF" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field v-model="dateDF" label="DF" placeholder="Must end at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
@@ -234,16 +187,16 @@
               <v-date-picker v-model="dateDF" @input="menuDF = false"></v-date-picker>
             </v-menu>
         <!-- DUR -->
-              <v-text-field v-model="year" color="#673AB7" type="number" label="Year" value="2022"></v-text-field>
-              <v-text-field v-model="month" color="#673AB7" type="number" label="Month"></v-text-field>
-              <v-text-field v-model="day" color="#673AB7" type="number" label="Day"></v-text-field>
-              <v-text-field v-model="hours" color="#673AB7" type="number" label="Hours"></v-text-field>
-              <v-text-field v-model="minutes" color="#673AB7" type="number" label="Minutes"></v-text-field>
-              <v-text-field v-model="seconds" color="#673AB7" type="number" label="Seconds"></v-text-field>
+              <v-text-field v-model="year" color="#673AB7" type="number" label="Year" value="0"></v-text-field>
+              <v-text-field v-model="month" color="#673AB7" type="number" label="Month" value="0"></v-text-field>
+              <v-text-field v-model="day" color="#673AB7" type="number" label="Day" value="0"></v-text-field>
+              <v-text-field v-model="hours" color="#673AB7" type="number" label="Hours" value="0"></v-text-field>
+              <v-text-field v-model="minutes" color="#673AB7" type="number" label="Minutes" value="0"></v-text-field>
+              <v-text-field v-model="seconds" color="#673AB7" type="number" label="Seconds" value="0"></v-text-field>
           </v-card-text>
          <v-card-actions>
           <v-spacer></v-spacer>
-         <v-btn color="primary" @click="dialogobjects = false">Add activity</v-btn>
+         <v-btn color="primary" @click="dialogobjects = false, Addd(TypeActivity)">Add activity</v-btn>
         </v-card-actions>
         </v-card>
         </v-dialog>
@@ -254,7 +207,7 @@
               <v-list class="hier pa-16">
               <v-list-item dense class="blublu--text" v-for="(Act,index) in ActList" :key="Act.id">
               <v-list-item-action>
-              <v-list-item-title><!--{{Act.id}}--> {{Act.title}} : {{Act.name}}</v-list-item-title> 
+              <v-list-item-title> <!--{{Act.id}}--> {{Act.title}} : {{Act.name}}</v-list-item-title> 
               </v-list-item-action>   
               <v-list-item-content> 
               <v-icon right class="blublu--text"> mdi-timeline-text-outline </v-icon>
@@ -311,12 +264,14 @@ export default ({
       menuCD: false,
       menuCF: false,
       //DUR 
-      year: '',
-      month: '',
-      day: '',
-      hours: '',
-      minutes: '',
-      seconds: '',
+      year: '0',
+      month: '0',
+      day: '0',
+      hours: '0',
+      minutes: '0',
+      seconds: '0',
+      //URI
+      URI: 'http://Exemple/ouvrir',
       //FORMS
       dialogstructure: false,
       dialogcondition: false,
@@ -331,16 +286,20 @@ export default ({
           conditionIF: '',
           conditionWhile:'',
           ActivityType: ['sequence','flow','get','put','post','delete','if','ifelse','while'],
-          ActList: [{id: 1,title: 'Activity process created',name:'fabrication',Activity: 'process'}],
+          ActList: [{id: 1,title: 'Scenario created !',name: this.processname ,Activity: 'process', dateDebut: this.dateCD, dateFin: this.dateCF}],
           newText: '',
           nextId: 2,
-          arr: [{nb: 1, Activity: 'process', state: 'none'}],
+          arr: [{nb: 1, Activity: 'process', state: 'none', ActivityName: '', dateDD:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateDF:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)}],
           nextNb: 2,
           select: 'none',
           ActivityChoice: ['Simple','Sequential','Parallel','UnderCondition','InLoop'],
     }
    },
    methods: {
+    //selected object
+    ob: function(){
+      console.log(this.ActivityName);
+    },
       //selected activity
       selection: function(){
         console.log(this.select);
@@ -351,6 +310,9 @@ export default ({
           nb: this.nextNb++,
           Activity: Act,
           state: this.select,
+          ActivityName: this.ActivityName,
+          dateDD: this.dateDD,
+          dateDF: this.dateDF
         })
         this.select= 'none';
       },
@@ -359,7 +321,7 @@ export default ({
          this.ActList.push({
         id: this.nextId++,
         title: text,
-        name: n,
+        name: n
       })
       this.newText = '';
       },
@@ -378,6 +340,12 @@ export default ({
           const pi = doc.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8"');
           doc.insertBefore(pi, doc.firstChild);
           var root = doc.createElement('process');
+          root.setAttribute("name", this.processname);
+          root.setAttribute("DUR", "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+0+"S");
+          root.setAttribute("CD", '');
+          root.setAttribute("CF", '');
+          root.setAttribute("TC", '');
+          root.setAttribute("InstantDebut", 0);
           //verifier le contenu du tableau d'activites
           for(var i=0; i < this.arr.length; i++){
             console.log(this.arr[i].nb, this.arr[i].Activity);
@@ -387,7 +355,7 @@ export default ({
             //Ajout de l'activite SEQUENCE -----------------------------------------------------------
             if(this.arr[i].Activity == 'sequence'){
                   if(this.arr[i].state == 'Simple'){
-                  var activite = this.GenStr('sequence', this.ActivityName);
+                  var activite = this.GenStr('sequence', this.arr[i].ActivityName);
                   root.appendChild(activite);
                   var tmp = activite;
                   var x = i+1;
@@ -397,97 +365,97 @@ export default ({
                     if(this.arr[x].state == 'Sequential'){
                     //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var t = this.GenStr('sequence',this.ActivityName); 
+                    var t = this.GenStr('sequence',this.arr[x].ActivityName); 
                     root.lastChild.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var t = this.GenStr('flow',this.ActivityName); 
+                    var t = this.GenStr('flow',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
-                  };
+                  }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var t = this.GenCom('get',this.ActivityName); 
+                    var t = this.GenCom('get',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
-                   };
+                   }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var t = this.GenCom('put',this.ActivityName); 
+                    var t = this.GenCom('put',this.arr[x].ActivityName); 
                     tmp.appendChild(t); 
-                   };
+                   }
                     //Si l'activite est un POST--------------------
                       if(this.arr[x].Activity == 'post'){
-                    var t = this.GenCom('post',this.ActivityName); 
+                    var t = this.GenCom('post',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var t = this.GenCom('delete',this.ActivityName); 
+                    var t = this.GenCom('delete',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
-                   };
+                   }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var t = this.GenIf('if',this.ActivityName); 
+                    var t = this.GenIf('if',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
-                   };
+                   }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile(this.ActivityName); 
+                    var t = this.GenWhile(this.arr[x].ActivityNamee); 
                     tmp.appendChild(t);
-                   };
+                   }
                    }else{
                     etat =false;
-                  };
+                  }
                   if(x < this.arr.length){
                   if(this.arr[x].state == ('Parallel'||'UnderCondition'||'InLoop')){
                     console.log(x);
                      //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var y = this.GenStr('sequence',this.ActivityName); 
+                    var y = this.GenStr('sequence',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var y = this.GenStr('flow',this.ActivityName); 
+                    var y = this.GenStr('flow',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var y = this.GenCom('get',this.ActivityName); 
+                    var y = this.GenCom('get',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var y = this.GenCom('put',this.ActivityName); 
+                    var y = this.GenCom('put',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y); 
-                    };
+                    }
                     //Si l'activite est un POST--------------------
                      if(this.arr[x].Activity == 'post'){
-                    var y = this.GenCom('post',this.ActivityName); 
+                    var y = this.GenCom('post',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var y = this.GenCom('delete',this.ActivityName); 
+                    var y = this.GenCom('delete',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var y = this.GenIf('if',this.ActivityName); 
+                    var y = this.GenIf('if',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenIf('while',this.ActivityName); 
+                    var y = this.GenIf('while',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
-                    };
-                  };
-                  };
+                    }
+                  }
+                  }
                    x++;
-                };
-                };
+                }
+                }
                 //fin loop while
-            };
+            }
 //Ajout de l'activite FLOW -----------------------------------------------------------------
            if(this.arr[i].Activity == 'flow'){
      //Si c'est un element simple ---------------------------------------------------------------
@@ -504,46 +472,46 @@ export default ({
                 if(this.arr[x].Activity == 'sequence'){
                     var t = this.GenStr('sequence','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un FLOW--------------------
                 if(this.arr[x].Activity == 'flow'){
                     var t = this.GenStr('flow','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
                     var t = this.GenCom('get','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
                     var t = this.GenCom('put','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                   //Si l'activite est un POST--------------------
                       if(this.arr[x].Activity == 'post'){
                     var t = this.GenCom('post','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
                     var t = this.GenCom('delete','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
                     var t = this.GenIf('if','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                      //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
                     var t = this.GenWhile('test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Fin des sous activites ---------------------------
                   }else{
                     etat = false;
-                  };
+                  }
                   //3rd level-----------------------------------------------------------------------
                   if(x < this.arr.length){
                   if(this.arr[x].state == ('UnderCondition'||'InLoop'||'Sequential')){
@@ -551,50 +519,50 @@ export default ({
                       if(this.arr[x].Activity == 'sequence'){
                     var y = this.GenStr('sequence','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
                     var y = this.GenStr('flow','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
                     var y = this.GenCom('get','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
                     var y = this.GenCom('put','test'); 
                     tmp.lastChild.appendChild(y); 
-                    };
+                    }
                     //Si l'activite est un POST--------------------
                      if(this.arr[x].Activity == 'post'){
                     var y = this.GenCom('post','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
                     var y = this.GenCom('delete','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
                     var y = this.GenIf('if','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
                     var y = this.GenWhile('test'); 
                     tmp.lastChild.appendChild(y);
-                    };
-                  };
-                  };
+                    }
+                  }
+                  }
                   //Incrementation de la boucle ---------------------------
                   x++;
-                };
+                }
                 //Fin du while -------------------------------------------
-                  };
-          };
+                  }
+          }
             //Ajout de l'activite IF -----------------------------------------------------------------
              if(this.arr[i].Activity == 'if'){
               //Si c'est un element simple ---------------------------------------------------------------
@@ -611,45 +579,45 @@ export default ({
                       if(this.arr[x].Activity == 'sequence'){
                     var t = this.GenStr('sequence','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un FLOW--------------------
                       if(this.arr[x].Activity == 'flow'){
                     var t = this.GenStr('flow','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
                     var t = this.GenCom('get','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
                     var t = this.GenCom('put','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un POST--------------------
                       if(this.arr[x].Activity == 'post'){
                     var t = this.GenCom('post','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
                     var t = this.GenCom('delete','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
                     var t = this.GenIf('if','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
                     var t = this.GenWhile('test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                   }else{
                     etat = false;
-                  };
+                  }
                   //3rd level-----------------------------------------------------------------------
                   if(x < this.arr.length){
                   if(this.arr[x].state == ('Parallel'||'InLoop'||'Sequential')){
@@ -657,48 +625,48 @@ export default ({
                       if(this.arr[x].Activity == 'sequence'){
                     var y = this.GenStr('sequence','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
                     var y = this.GenStr('flow','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
                     var y = this.GenCom('get','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
                     var y = this.GenCom('put','test'); 
                     tmp.lastChild.appendChild(y); 
-                    };
+                    }
                     //Si l'activite est un POST--------------------
                      if(this.arr[x].Activity == 'post'){
                     var y = this.GenCom('post','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
                     var y = this.GenCom('delete','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
                     var y = this.GenIf('if','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
                     var y = this.GenWhile('test'); 
                     tmp.lastChild.appendChild(y);
-                    };
-                  };
-                  };
+                    }
+                  }
+                  }
                   x++;
-                };
-                  };  
-             };
+                }
+                  }
+             }
              //Ajout de l'activite While ----------------------------------------------------------------
              if(this.arr[i].Activity == 'while'){
               //Si c'est un element simple ---------------------------------------------------------------
@@ -715,45 +683,45 @@ export default ({
                       if(this.arr[x].Activity == 'sequence'){
                     var t = this.GenStr('sequence','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un FLOW--------------------
                       if(this.arr[x].Activity == 'flow'){
                     var t = this.GenStr('flow','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
                     var t = this.GenCom('get','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
                     var t = this.GenCom('put','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un POST--------------------
                       if(this.arr[x].Activity == 'post'){
                     var t = this.GenCom('post','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
                     var t = this.GenCom('delete','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
                     var t = this.GenIf('if','test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
                     var t = this.GenWhile('test'); 
                     tmp.appendChild(t);
-                    };
+                    }
                   }else{
                     etat = false;
-                  };
+                  }
                   //3rd level-----------------------------------------------------------------------
                   if(x < this.arr.length){
                   if(this.arr[x].state == ('Parallel'||'UnderCondition'||'Sequential')){
@@ -761,55 +729,88 @@ export default ({
                       if(this.arr[x].Activity == 'sequence'){
                     var y = this.GenStr('sequence','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
                     var y = this.GenStr('flow','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
                     var y = this.GenCom('get','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
                     var y = this.GenCom('put','test'); 
                     tmp.lastChild.appendChild(y); 
-                    };
+                    }
                     //Si l'activite est un POST--------------------
                      if(this.arr[x].Activity == 'post'){
                     var y = this.GenCom('post','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
                     var y = this.GenCom('delete','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
                     var y = this.GenIf('if','test'); 
                     tmp.lastChild.appendChild(y);
-                    };
+                    }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
                     var y = this.GenWhile('test'); 
                     tmp.lastChild.appendChild(y);
-                    };
-                  };
-                  };
+                    }
+                  }
+                  }
                   x++;
-                };
-                  };  
-             };
-          };
+                }
+                  }
+             }
+          }
           this.arr = [{nb: 1, Activity: 'process', state: 'none'}];
           doc.appendChild(root);
-          //Afficher le document dans la console------------
+          //Parcourir le fichier pour calculer les attributs dd, df et dur de la racine ---------------------
+          for(var i = 0; i<root.childNodes.length; i++){
+            var element = root.childNodes[i];
+            if(element.nodeType==1){
+              for(var j=0; j< element.childNodes.length; j++){
+                var element2 = element.childNodes[j];
+                if(element2.nodeType==1){
+                //element2 = extensionActivity / firstChild (put/get/post/delete)
+                var dd = element2.firstElementChild.getAttribute('DD');
+                element.setAttribute("DD",dd);
+                var df = element2.firstElementChild.getAttribute('DF');
+                element.setAttribute("DF",df);
+                }
+              }
+                //console.log(element.getAttribute("name"));
+            }
+          }
+          var dd = root.firstElementChild.getAttribute('DD');
+          var df = root.lastElementChild.getAttribute('DF');
+          root.setAttribute("DD",dd);
+          root.setAttribute("DF",df);
+
           var xmlString = serializer.serializeToString(doc);
-          console.log(xmlString);
+          console.log(xmlString); 
+          var durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+1+"S";
+          var durrseq = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+10+"S";
+          //calcul de duree --------------------------------------------------------------------------------
+          const path1 = durrseq;
+          const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
+          const match1 = path1.match(pattern);
+          const path2 = durr;
+          const match2 = path2.match(pattern);
+          var d = parseInt(match1.groups['seconds']) + parseInt(match2.groups['seconds']);
+          durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
+          root.setAttribute("DUR",durr);
         },
+
          //SEQUENCE/FLOW----------------------------------------------------
         GenStr: function(ActivityType, ActivityName){
           var doc = document.implementation.createDocument("", "", null);
@@ -818,8 +819,6 @@ export default ({
               // create sequence
             var tmp = doc.createElement("sequence");
             tmp.setAttribute("name", ActivityName);
-            tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", this.dateDF);
             tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
             tmp.setAttribute("CD", this.dateCD);
             tmp.setAttribute("CF", this.dateCF);
@@ -831,18 +830,18 @@ export default ({
             var tmp = doc.createElement("flow");
             tmp.setAttribute("name", ActivityName);
             tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", "");
-            tmp.setAttribute("DUR", "");
-            tmp.setAttribute("CD", "");
-            tmp.setAttribute("CF", "");
-            tmp.setAttribute("TC", "");
-            tmp.setAttribute("InstantDebut", "");
+            tmp.setAttribute("DF", this.dateDF);
+            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("CD", this.dateCD);
+            tmp.setAttribute("CF", this.dateCF);
+            tmp.setAttribute("TC", this.Tcontrainte);
+            tmp.setAttribute("InstantDebut", 0);
             break;
           }
             return tmp;
           },
         //GET,POST,PUT,DELETE-------------------------------------------------
-        GenCom: function(ActivityType, ActivityName){
+        GenCom: function(ActivityType, ActivityName, i){
           var doc = document.implementation.createDocument("", "", null);
           var extensionActivity = doc.createElement("extensionActivity");
           switch(ActivityType) {
@@ -850,44 +849,44 @@ export default ({
               // create get
             var tmp = doc.createElement("get");
             tmp.setAttribute("name", ActivityName);
-            tmp.setAttribute("uri", "");
-            tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", "");
-            tmp.setAttribute("DUR", "");
-            tmp.setAttribute("InstantDebut", "");
+            tmp.setAttribute("uri", this.URI);
+            tmp.setAttribute("DD", this.arr[i].dateDD);
+            tmp.setAttribute("DF", this.arr[i].dateDF);
+            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("InstantDebut", 0);
             extensionActivity.appendChild(tmp);
             break;
             case 'put':
               // create put
             var tmp = doc.createElement("put");
             tmp.setAttribute("name", ActivityName);
-            tmp.setAttribute("uri", "");
+            tmp.setAttribute("uri", this.URI);
             tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", "");
-            tmp.setAttribute("DUR", "");
-            tmp.setAttribute("InstantDebut", "");
+            tmp.setAttribute("DF", this.dateDF);
+            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("InstantDebut", 0);
             extensionActivity.appendChild(tmp);
             break;
             case 'post':
               // create post
             var tmp = doc.createElement("post");
             tmp.setAttribute("name", ActivityName);
-            tmp.setAttribute("uri", "");
+            tmp.setAttribute("uri", this.URI);
             tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", "");
-            tmp.setAttribute("DUR", "");
-            tmp.setAttribute("InstantDebut", "");
+            tmp.setAttribute("DF", this.dateDF);
+            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("InstantDebut", 0);
             extensionActivity.appendChild(tmp);
             break;
             case 'delete':
               // create delete
             var tmp = doc.createElement("delete");
             tmp.setAttribute("name", ActivityName);
-            tmp.setAttribute("uri", "");
+            tmp.setAttribute("uri", this.URI);
             tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", "");
-            tmp.setAttribute("DUR", "");
-            tmp.setAttribute("InstantDebut", "");
+            tmp.setAttribute("DF", this.dateDF);
+            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("InstantDebut", 0);
             extensionActivity.appendChild(tmp);
             break;
           }
@@ -899,12 +898,12 @@ export default ({
           var doc = document.implementation.createDocument("", "", null);
           var iff = doc.createElement('if');
             iff.setAttribute("DD", this.dateDD);
-            iff.setAttribute("DF", "");
-            iff.setAttribute("DUR", "");
-            iff.setAttribute("CD", "");
-            iff.setAttribute("CF", "");
-            iff.setAttribute("TC", "");
-            iff.setAttribute("InstantDebut", "");
+            iff.setAttribute("DF", this.dateDF);
+            iff.setAttribute("DUR","P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            iff.setAttribute("CD", this.dateCD);
+            iff.setAttribute("CF", this.dateCF);
+            iff.setAttribute("TC", this.Tcontrainte);
+            iff.setAttribute("InstantDebut", 0);
           var ifcondition = doc.createElement('condition');
           var conditionif = doc.createTextNode(conditionIF);
           ifcondition.appendChild(conditionif);
@@ -920,12 +919,12 @@ export default ({
         var doc = document.implementation.createDocument("", "", null);
         var whi = doc.createElement('while');
             whi.setAttribute("DD", this.dateDD);
-            whi.setAttribute("DF", "");
-            whi.setAttribute("DUR", "");
-            whi.setAttribute("CD", "");
-            whi.setAttribute("CF", "");
-            whi.setAttribute("TC", "");
-            whi.setAttribute("InstantDebut", "");
+            whi.setAttribute("DF", this.dateDF);
+            whi.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            whi.setAttribute("CD", this.dateCD);
+            whi.setAttribute("CF", this.dateCF);
+            whi.setAttribute("TC", this.Tcontrainte);
+            whi.setAttribute("InstantDebut", 0);
         var conditionn = doc.createElement('condition');
         var whicondition = doc.createTextNode(conditionWhile);
         conditionn.appendChild(whicondition);
