@@ -786,13 +786,15 @@ export default ({
           }
           this.arr = [{nb: 1, Activity: 'process', state: 'none'}];
           doc.appendChild(root);
-          //Parcourir le fichier pour calculer les attributs dd, df et dur de la racine ---------------------
+          var durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+0+"S";
+          //Parcourir le fichier pour calculer les attributs dd, df et dur---------------------
           for(var i = 0; i<root.childNodes.length; i++){
             var element = root.childNodes[i];
             if(element.nodeType==1){
               var j = element.childNodes.length;
               var element2 = element.childNodes[0];
               if(element2.nodeType==1){
+                //si c'est un objet --------------------------------------------------------
                 if(element2.hasAttribute("DD") == false){
               //element2 = extensionActivity / firstChild (put/get/post/delete)
               var dd = element2.firstElementChild.getAttribute('DD');
@@ -800,18 +802,39 @@ export default ({
               element2 = element.childNodes[j-1];
               var df = element2.firstElementChild.getAttribute('DF');
               element.setAttribute("DF",df);
-              for(var t=0; t<element.childNodes.length; t++){
-                var dur = element2.firstElementChild.getAttribute('DUR');
-                console.log(dur);
+              //calcul de duree de l'elemnt --------------------------------------------------------------------------------
+              for(var t=0; t<element.childNodes.length-1; t++){
+                //extension
+                element2 = element.childNodes[t];
+                const path1 = element2.firstElementChild.getAttribute('DUR');
+                const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
+                const match1 = path1.match(pattern);
+                element2 = element.childNodes[t+1];
+                const path2 = element2.firstElementChild.getAttribute('DUR');
+                const match2 = path2.match(pattern);
+                var d = parseInt(match1.groups['seconds']) + parseInt(match2.groups['seconds']);
+                durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
+                element.setAttribute("DUR",durr);
               }
                 }else{
-              //prendre directement l'element 
+              //prendre directement l'element -------------------
               var dd = element2.getAttribute('DD');
               element.setAttribute("DD",dd);
               element2 = element.childNodes[j-1];
               var df = element2.getAttribute('DF');
               element.setAttribute("DF",df);
-                }
+              //calcul de durree -----------------------------
+               element2 = element.childNodes[t];
+              const path1 = element2.getAttribute('DUR');
+              const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
+              const match1 = path1.match(pattern);
+              element2 = element.childNodes[t+1];
+              const path2 = element2.getAttribute('DUR');
+              const match2 = path2.match(pattern);
+              var d = parseInt(match1.groups['seconds']) + parseInt(match2.groups['seconds']);
+              durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
+              element.setAttribute("DUR",durr);
+              }
             }
             }
           }
@@ -819,20 +842,9 @@ export default ({
           var df = root.lastElementChild.getAttribute('DF');
           root.setAttribute("DD",dd);
           root.setAttribute("DF",df);
-          var durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+1+"S";
-          var durrseq = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+10+"S";
+          root.setAttribute("DUR", durr);
           var xmlString = serializer.serializeToString(doc);
           console.log(xmlString); 
-          
-          //calcul de duree --------------------------------------------------------------------------------
-          const path1 = durrseq;
-          const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
-          const match1 = path1.match(pattern);
-          const path2 = durr;
-          const match2 = path2.match(pattern);
-          var d = parseInt(match1.groups['seconds']) + parseInt(match2.groups['seconds']);
-          durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
-          root.setAttribute("DUR",durr);
         },
          //SEQUENCE/FLOW----------------------------------------------------
         GenStr: function(ActivityType, ActivityName){
