@@ -289,7 +289,7 @@ export default ({
           ActList: [{id: 1,title: 'Scenario created !',name: this.processname ,Activity: 'process', dateDebut: this.dateCD, dateFin: this.dateCF}],
           newText: '',
           nextId: 2,
-          arr: [{nb: 1, Activity: 'process', state: 'none', ActivityName: '', dateDD:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateDF:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), duree: "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S"}],
+          arr: [{nb: 1, Activity: 'process', state: 'none', ActivityName: '', dateDD:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateDF:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), duree: "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S", dateCD: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateCF: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), Tcontrainte: ''}],
           nextNb: 2,
           select: 'none',
           ActivityChoice: ['Simple','Sequential','Parallel','UnderCondition','InLoop'],
@@ -306,7 +306,7 @@ export default ({
       },
       //Create array of activities---------
       Addd: function(Act){
-        if(Act ==  ('get'||'put'||'post'||'delete')){
+        if(Act == 'get'|| Act == 'put'|| Act == 'post'|| Act == 'delete'){
           this.arr.push({
           nb: this.nextNb++,
           Activity: Act,
@@ -317,13 +317,14 @@ export default ({
           duree: "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S"
         })
         }else{
-           this.arr.push({
+          this.arr.push({
           nb: this.nextNb++,
           Activity: Act,
           state: this.select,
           ActivityName: this.ActivityName,
           dateCD: this.dateCD,
-          dateCF: this.dateCF
+          dateCF: this.dateCF,
+          Tcontrainte: this.Tcontrainte
         })
         }
         this.select= 'none';
@@ -360,14 +361,14 @@ export default ({
           root.setAttribute("InstantDebut", 0);
           //verifier le contenu du tableau d'activites
           for(var i=0; i < this.arr.length; i++){
-            console.log(this.arr[i].nb, this.arr[i].Activity);
+            console.log(this.arr[i].nb, this.arr[i].Activity, this.arr[i].ActivityName, this.arr[i].dateDD, this.arr[i].dateDF, this.arr[i].dateCD, this.arr[i].dateCF, this.arr[i].duree, this.arr[i].Tcontrainte);
           }
           //creation du fichier -----------------------
           for(var i=1; i < this.arr.length; i++){
             //Ajout de l'activite SEQUENCE -----------------------------------------------------------
             if(this.arr[i].Activity == 'sequence'){
                   if(this.arr[i].state == 'Simple'){
-                  var activite = this.GenStr('sequence', this.arr[i].ActivityName);
+                  var activite = this.GenStr('sequence', this.arr[i].ActivityName, i);
                   root.appendChild(activite);
                   var tmp = activite;
                   var x = i+1;
@@ -377,12 +378,12 @@ export default ({
                     if(this.arr[x].state == 'Sequential'){
                     //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var t = this.GenStr('sequence',this.arr[x].ActivityName); 
+                    var t = this.GenStr('sequence',this.arr[x].ActivityName,x); 
                     root.lastChild.appendChild(t);
                     }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var t = this.GenStr('flow',this.arr[x].ActivityName); 
+                    var t = this.GenStr('flow',this.arr[x].ActivityName, x); 
                     tmp.appendChild(t);
                   }
                     //Si l'activite est un GET-------------------- 
@@ -392,27 +393,27 @@ export default ({
                    }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var t = this.GenCom('put',this.arr[x].ActivityName); 
+                    var t = this.GenCom('put',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t); 
                    }
                     //Si l'activite est un POST--------------------
                       if(this.arr[x].Activity == 'post'){
-                    var t = this.GenCom('post',this.arr[x].ActivityName); 
+                    var t = this.GenCom('post',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var t = this.GenCom('delete',this.arr[x].ActivityName); 
+                    var t = this.GenCom('delete',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                    }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var t = this.GenIf('if',this.arr[x].ActivityName); 
+                    var t = this.GenIf('if',this.arr[x].ActivityName, x); 
                     tmp.appendChild(t);
                    }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile(this.arr[x].ActivityNamee); 
+                    var t = this.GenWhile(this.arr[x].ActivityName, x); 
                     tmp.appendChild(t);
                    }
                    }else{
@@ -423,42 +424,42 @@ export default ({
                     console.log(x);
                      //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var y = this.GenStr('sequence',this.arr[x].ActivityName); 
+                    var y = this.GenStr('sequence',this.arr[x].ActivityName, x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var y = this.GenStr('flow',this.arr[x].ActivityName); 
+                    var y = this.GenStr('flow',this.arr[x].ActivityName, x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var y = this.GenCom('get',this.arr[x].ActivityName); 
+                    var y = this.GenCom('get',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var y = this.GenCom('put',this.arr[x].ActivityName); 
+                    var y = this.GenCom('put',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y); 
                     }
                     //Si l'activite est un POST--------------------
                      if(this.arr[x].Activity == 'post'){
-                    var y = this.GenCom('post',this.arr[x].ActivityName); 
+                    var y = this.GenCom('post',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var y = this.GenCom('delete',this.arr[x].ActivityName); 
+                    var y = this.GenCom('delete',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var y = this.GenIf('if',this.arr[x].ActivityName); 
+                    var y = this.GenIf('if',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenIf('while',this.arr[x].ActivityName); 
+                    var y = this.GenIf('while',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                   }
@@ -472,7 +473,7 @@ export default ({
            if(this.arr[i].Activity == 'flow'){
      //Si c'est un element simple ---------------------------------------------------------------
             if(this.arr[i].state == 'Simple'){
-                  var activite = this.GenStr('flow','test');
+                  var activite = this.GenStr('flow',this.arr[i].ActivityName);
                   root.appendChild(activite);
                   var tmp = activite;
                   var x = i+1;
@@ -482,42 +483,42 @@ export default ({
               if(this.arr[x].state == 'Parallel'){
                     //Si l'activite est une SEQUENCE--------------------
                 if(this.arr[x].Activity == 'sequence'){
-                    var t = this.GenStr('sequence','test'); 
+                    var t = this.GenStr('sequence',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un FLOW--------------------
                 if(this.arr[x].Activity == 'flow'){
-                    var t = this.GenStr('flow','test'); 
+                    var t = this.GenStr('flow',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var t = this.GenCom('get','test'); 
+                    var t = this.GenCom('get',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var t = this.GenCom('put','test'); 
+                    var t = this.GenCom('put',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                   //Si l'activite est un POST--------------------
                       if(this.arr[x].Activity == 'post'){
-                    var t = this.GenCom('post','test'); 
+                    var t = this.GenCom('post',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var t = this.GenCom('delete','test'); 
+                    var t = this.GenCom('delete',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var t = this.GenIf('if','test'); 
+                    var t = this.GenIf('if',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                      //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile('test'); 
+                    var t = this.GenWhile(this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Fin des sous activites ---------------------------
@@ -529,42 +530,42 @@ export default ({
                   if(this.arr[x].state == ('UnderCondition'||'InLoop'||'Sequential')){
                      //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var y = this.GenStr('sequence','test'); 
+                    var y = this.GenStr('sequence',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var y = this.GenStr('flow','test'); 
+                    var y = this.GenStr('flow',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var y = this.GenCom('get','test'); 
+                    var y = this.GenCom('get',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var y = this.GenCom('put','test'); 
+                    var y = this.GenCom('put',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y); 
                     }
                     //Si l'activite est un POST--------------------
                      if(this.arr[x].Activity == 'post'){
-                    var y = this.GenCom('post','test'); 
+                    var y = this.GenCom('post',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var y = this.GenCom('delete','test'); 
+                    var y = this.GenCom('delete',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var y = this.GenIf('if','test'); 
+                    var y = this.GenIf('if',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenWhile('test'); 
+                    var y = this.GenWhile(this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                   }
@@ -579,7 +580,7 @@ export default ({
              if(this.arr[i].Activity == 'if'){
               //Si c'est un element simple ---------------------------------------------------------------
               if(this.arr[i].state == 'Simple'){
-                  var activite = this.GenIf('if','test');
+                  var activite = this.GenIf('if',this.arr[i].ActivityName);
                   root.appendChild(activite);
                    var tmp = activite;
                   var x = i+1;
@@ -589,42 +590,42 @@ export default ({
                   if(this.arr[x].state == 'UnderCondition'){
                     //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var t = this.GenStr('sequence','test'); 
+                    var t = this.GenStr('sequence',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un FLOW--------------------
                       if(this.arr[x].Activity == 'flow'){
-                    var t = this.GenStr('flow','test'); 
+                    var t = this.GenStr('flow',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var t = this.GenCom('get','test'); 
+                    var t = this.GenCom('get',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var t = this.GenCom('put','test'); 
+                    var t = this.GenCom('put',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un POST--------------------
                       if(this.arr[x].Activity == 'post'){
-                    var t = this.GenCom('post','test'); 
+                    var t = this.GenCom('post',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var t = this.GenCom('delete','test'); 
+                    var t = this.GenCom('delete',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var t = this.GenIf('if','test'); 
+                    var t = this.GenIf('if',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile('test'); 
+                    var t = this.GenWhile(this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                   }else{
@@ -635,42 +636,42 @@ export default ({
                   if(this.arr[x].state == ('Parallel'||'InLoop'||'Sequential')){
                      //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var y = this.GenStr('sequence','test'); 
+                    var y = this.GenStr('sequence',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var y = this.GenStr('flow','test'); 
+                    var y = this.GenStr('flow',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var y = this.GenCom('get','test'); 
+                    var y = this.GenCom('get',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var y = this.GenCom('put','test'); 
+                    var y = this.GenCom('put',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y); 
                     }
                     //Si l'activite est un POST--------------------
                      if(this.arr[x].Activity == 'post'){
-                    var y = this.GenCom('post','test'); 
+                    var y = this.GenCom('post',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var y = this.GenCom('delete','test'); 
+                    var y = this.GenCom('delete',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var y = this.GenIf('if','test'); 
+                    var y = this.GenIf('if',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenWhile('test'); 
+                    var y = this.GenWhile(this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                   }
@@ -683,7 +684,7 @@ export default ({
              if(this.arr[i].Activity == 'while'){
               //Si c'est un element simple ---------------------------------------------------------------
               if(this.arr[i].state == 'Simple'){
-                  var activite = this.GenWhile('test');
+                  var activite = this.GenWhile(this.arr[i].ActivityName);
                   root.appendChild(activite);
                    var tmp = activite;
                   var x = i+1;
@@ -693,42 +694,42 @@ export default ({
                   if(this.arr[x].state == 'InLoop'){
                     //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var t = this.GenStr('sequence','test'); 
+                    var t = this.GenStr('sequence',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un FLOW--------------------
                       if(this.arr[x].Activity == 'flow'){
-                    var t = this.GenStr('flow','test'); 
+                    var t = this.GenStr('flow',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var t = this.GenCom('get','test'); 
+                    var t = this.GenCom('get',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var t = this.GenCom('put','test'); 
+                    var t = this.GenCom('put',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un POST--------------------
                       if(this.arr[x].Activity == 'post'){
-                    var t = this.GenCom('post','test'); 
+                    var t = this.GenCom('post',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var t = this.GenCom('delete','test'); 
+                    var t = this.GenCom('delete',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var t = this.GenIf('if','test'); 
+                    var t = this.GenIf('if',this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile('test'); 
+                    var t = this.GenWhile(this.arr[x].ActivityName); 
                     tmp.appendChild(t);
                     }
                   }else{
@@ -739,42 +740,42 @@ export default ({
                   if(this.arr[x].state == ('Parallel'||'UnderCondition'||'Sequential')){
                      //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var y = this.GenStr('sequence','test'); 
+                    var y = this.GenStr('sequence',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var y = this.GenStr('flow','test'); 
+                    var y = this.GenStr('flow',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un GET-------------------- 
                       if(this.arr[x].Activity == 'get'){
-                    var y = this.GenCom('get','test'); 
+                    var y = this.GenCom('get',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un PUT--------------------
                      if(this.arr[x].Activity == 'put'){
-                    var y = this.GenCom('put','test'); 
+                    var y = this.GenCom('put',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y); 
                     }
                     //Si l'activite est un POST--------------------
                      if(this.arr[x].Activity == 'post'){
-                    var y = this.GenCom('post','test'); 
+                    var y = this.GenCom('post',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un DELETE--------------------
                       if(this.arr[x].Activity == 'delete'){
-                    var y = this.GenCom('delete','test'); 
+                    var y = this.GenCom('delete',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var y = this.GenIf('if','test'); 
+                    var y = this.GenIf('if',this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenWhile('test'); 
+                    var y = this.GenWhile(this.arr[x].ActivityName); 
                     tmp.lastChild.appendChild(y);
                     }
                   }
@@ -793,9 +794,10 @@ export default ({
             if(element.nodeType==1){
               var j = element.childNodes.length;
               var element2 = element.childNodes[0];
+              if(element2 != null){
               if(element2.nodeType==1){
                 //si c'est un objet --------------------------------------------------------
-                if(element2.hasAttribute("DD") == false){
+                if(element2.hasAttribute("name") == false){
               //element2 = extensionActivity / firstChild (put/get/post/delete)
               var dd = element2.firstElementChild.getAttribute('DD');
               element.setAttribute("DD",dd);
@@ -809,13 +811,14 @@ export default ({
                 const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
                 const match1 = path1.match(pattern);
                 element2 = element.childNodes[t];
+                console.log(element2);
                 const path2 = element2.firstElementChild.getAttribute('DUR');
                 const match2 = path2.match(pattern);
                 var d = parseInt(match1.groups['seconds']) + parseInt(match2.groups['seconds']);
                 durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
                 element.setAttribute("DUR",durr);
               }
-                }else{
+              }else{
               //prendre directement l'element -------------------
               var dd = element2.getAttribute('DD');
               element.setAttribute("DD",dd);
@@ -835,18 +838,23 @@ export default ({
               element.setAttribute("DUR",durr);
               }
             }
+            }
           }
           }
           var dd = root.firstElementChild.getAttribute('DD');
           var df = root.lastElementChild.getAttribute('DF');
+          var cd = root.firstElementChild.getAttribute('CD');
+          var cf = root.lastElementChild.getAttribute('CF');
           root.setAttribute("DD",dd);
           root.setAttribute("DF",df);
           root.setAttribute("DUR", durr);
+          root.setAttribute("CD",cd);
+          root.setAttribute("CF", cf);
           var xmlString = serializer.serializeToString(doc);
           console.log(xmlString); 
         },
          //SEQUENCE/FLOW----------------------------------------------------
-        GenStr: function(ActivityType, ActivityName){
+        GenStr: function(ActivityType, ActivityName, i){
           var doc = document.implementation.createDocument("", "", null);
           switch(ActivityType) {
             case 'sequence':
@@ -854,21 +862,19 @@ export default ({
             var tmp = doc.createElement("sequence");
             tmp.setAttribute("name", ActivityName);
             tmp.setAttribute("DUR", '');
-            tmp.setAttribute("CD", this.dateCD);
-            tmp.setAttribute("CF", this.dateCF);
-            tmp.setAttribute("TC", this.Tcontrainte);
+            tmp.setAttribute("CD", this.arr[i].dateCD);
+            tmp.setAttribute("CF", this.arr[i].dateCF);
+            tmp.setAttribute("TC", this.arr[i].Tcontrainte);
             tmp.setAttribute("InstantDebut", 0);
             break;
             case 'flow':
               // create flow
             var tmp = doc.createElement("flow");
             tmp.setAttribute("name", ActivityName);
-            tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", this.dateDF);
-            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
-            tmp.setAttribute("CD", this.dateCD);
-            tmp.setAttribute("CF", this.dateCF);
-            tmp.setAttribute("TC", this.Tcontrainte);
+            tmp.setAttribute("DUR", '');
+            tmp.setAttribute("CD", this.arr[i].dateCD);
+            tmp.setAttribute("CF", this.arr[i].dateCF);
+            tmp.setAttribute("TC", this.arr[i].Tcontrainte);
             tmp.setAttribute("InstantDebut", 0);
             break;
           }
@@ -895,9 +901,9 @@ export default ({
             var tmp = doc.createElement("put");
             tmp.setAttribute("name", ActivityName);
             tmp.setAttribute("uri", this.URI);
-            tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", this.dateDF);
-            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("DD", this.arr[i].dateDD);
+            tmp.setAttribute("DF", this.arr[i].dateDF);
+            tmp.setAttribute("DUR", this.arr[i].duree);
             tmp.setAttribute("InstantDebut", 0);
             extensionActivity.appendChild(tmp);
             break;
@@ -906,9 +912,9 @@ export default ({
             var tmp = doc.createElement("post");
             tmp.setAttribute("name", ActivityName);
             tmp.setAttribute("uri", this.URI);
-            tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", this.dateDF);
-            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("DD", this.arr[i].dateDD);
+            tmp.setAttribute("DF", this.arr[i].dateDF);
+            tmp.setAttribute("DUR", this.arr[i].duree);
             tmp.setAttribute("InstantDebut", 0);
             extensionActivity.appendChild(tmp);
             break;
@@ -917,9 +923,9 @@ export default ({
             var tmp = doc.createElement("delete");
             tmp.setAttribute("name", ActivityName);
             tmp.setAttribute("uri", this.URI);
-            tmp.setAttribute("DD", this.dateDD);
-            tmp.setAttribute("DF", this.dateDF);
-            tmp.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            tmp.setAttribute("DD", this.arr[i].dateDD);
+            tmp.setAttribute("DF", this.arr[i].dateDF);
+            tmp.setAttribute("DUR", this.arr[i].duree);
             tmp.setAttribute("InstantDebut", 0);
             extensionActivity.appendChild(tmp);
             break;
@@ -931,9 +937,7 @@ export default ({
         GenIf: function(ActivityType, conditionIF){
           var doc = document.implementation.createDocument("", "", null);
           var iff = doc.createElement('if');
-            iff.setAttribute("DD", this.dateDD);
-            iff.setAttribute("DF", this.dateDF);
-            iff.setAttribute("DUR","P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            iff.setAttribute("DUR",'');
             iff.setAttribute("CD", this.dateCD);
             iff.setAttribute("CF", this.dateCF);
             iff.setAttribute("TC", this.Tcontrainte);
@@ -952,9 +956,7 @@ export default ({
       GenWhile: function(conditionWhile){
         var doc = document.implementation.createDocument("", "", null);
         var whi = doc.createElement('while');
-            whi.setAttribute("DD", this.dateDD);
-            whi.setAttribute("DF", this.dateDF);
-            whi.setAttribute("DUR", "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S");
+            whi.setAttribute("DUR", '');
             whi.setAttribute("CD", this.dateCD);
             whi.setAttribute("CF", this.dateCF);
             whi.setAttribute("TC", this.Tcontrainte);
