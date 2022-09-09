@@ -803,13 +803,12 @@ export default ({
               var df = element2.firstElementChild.getAttribute('DF');
               element.setAttribute("DF",df);
               //calcul de duree de l'elemnt --------------------------------------------------------------------------------
-              for(var t=0; t<element.childNodes.length-1; t++){
+              for(var t=0; t<element.childNodes.length; t++){
                 //extension
-                element2 = element.childNodes[t];
-                const path1 = element2.firstElementChild.getAttribute('DUR');
+                const path1 = durr;
                 const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
                 const match1 = path1.match(pattern);
-                element2 = element.childNodes[t+1];
+                element2 = element.childNodes[t];
                 const path2 = element2.firstElementChild.getAttribute('DUR');
                 const match2 = path2.match(pattern);
                 var d = parseInt(match1.groups['seconds']) + parseInt(match2.groups['seconds']);
@@ -836,7 +835,7 @@ export default ({
               element.setAttribute("DUR",durr);
               }
             }
-            }
+          }
           }
           var dd = root.firstElementChild.getAttribute('DD');
           var df = root.lastElementChild.getAttribute('DF');
