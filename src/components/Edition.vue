@@ -121,7 +121,7 @@
           <!-- ADD ACTIVITY TO FILE BUTTON----------------------------------------------------------------------------------------- -->
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="dialogstructure = false, Addd(TypeActivity)">Add activity</v-btn>
+            <v-btn color="primary" @click="dialogstructure = false, Addd(TypeActivity),AddNewAct(ActivityName,TypeActivity, dateCD, dateCF)">Add activity</v-btn>
           </v-card-actions>
           </v-card-text>
         </v-card>
@@ -132,7 +132,7 @@
             <v-card-text>
         <!--Activity Condition------------------------------------------------------ -->
             <h1 class="pa-4">Condition</h1>
-            <v-text-field color="#673AB7" label="Condition" placeholder="Type a condition here ... " class="mt-8" outlined dense></v-text-field>
+            <v-text-field v-model="Condition" color="#673AB7" label="Condition" placeholder="Type a condition here ... " class="mt-8" outlined dense></v-text-field>
             <span class="red--text">* Could be a boolean or an expression</span>
         <!-- Activity state ------------------------------------------- -->
             <v-select  v-model="select" :items="ActivityChoice" label="Select" single-line @change="selection()"></v-select>
@@ -153,12 +153,12 @@
               <v-date-picker v-model="dateCF" @input="menuCF = false"></v-date-picker>
             </v-menu>
             <!-- TC -->
-            <v-select :items="TC"  label="TC" outlined class="mt-8" color="#673AB7"></v-select>
+            <v-select v-model="Tcontrainte" :items="TC"  label="TC" outlined class="mt-8" color="#673AB7"></v-select>
           <!-- ----------------------------------------------------------------------------------------------------------------- -->
           <!-- ADD ACTIVITY TO FILE BUTTON----------------------------------------------------------------------------------------- -->
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="dialogcondition = false, Addd('sequence')">Add activity</v-btn>
+            <v-btn color="primary" @click="dialogcondition = false, Addd(TypeActivity), AddNewAct()">Add activity</v-btn>
           </v-card-actions>
           </v-card-text>
         </v-card>
@@ -196,7 +196,7 @@
           </v-card-text>
          <v-card-actions>
           <v-spacer></v-spacer>
-         <v-btn color="primary" @click="dialogobjects = false, Addd(TypeActivity)">Add activity</v-btn>
+         <v-btn color="primary" @click="dialogobjects = false, Addd(TypeActivity),AddNewAct()">Add activity</v-btn>
         </v-card-actions>
         </v-card>
         </v-dialog>
@@ -204,14 +204,14 @@
         <v-row>
           <v-col cols="12" md="6">
             <v-card tile class="hierarchy elevation-6 mt-4">
-              <v-list class="hier pa-16">
-              <v-list-item dense class="blublu--text" v-for="(Act,index) in ActList" :key="Act.id">
+              <v-list class="hier pa-6">
+              <v-list-item class="blublu--text text-right" v-for="(Act,index) in ActList" :key="Act.id">
               <v-list-item-action>
-              <v-list-item-title> <!--{{Act.id}}--> {{Act.title}} : {{Act.name}}</v-list-item-title> 
-              </v-list-item-action>   
-              <v-list-item-content> 
-              <v-icon right class="blublu--text"> mdi-timeline-text-outline </v-icon>
-              </v-list-item-content> 
+              <v-list-item-content> Name of the activity / object <v-icon dark>mdi-arrow-right-thin</v-icon>{{Act.title}}</v-list-item-content>
+              <v-list-item-content> Execution type <v-icon dark>mdi-arrow-right-thin</v-icon> {{Act.name}}</v-list-item-content> 
+              <v-list-item-content><v-icon dark color="green">mdi-timer-alert</v-icon> Must start at : {{Act.datecf}}</v-list-item-content>
+              <v-list-item-content><v-icon dark color="red">mdi-timer-alert</v-icon> Must end at : {{Act.datecf}}</v-list-item-content>
+              </v-list-item-action>  
               </v-list-item>
               </v-list>
             </v-card>
@@ -253,6 +253,8 @@ export default ({
       processdialog: false,
       //ACTIVITIES NAME
       ActivityName: '',
+      //CONDITION
+      Condition: '',
       //DATES
       dateDD: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
       dateDF: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
@@ -286,7 +288,7 @@ export default ({
           conditionIF: '',
           conditionWhile:'',
           ActivityType: ['sequence','flow','get','put','post','delete','if','ifelse','while'],
-          ActList: [{id: 1,title: 'Scenario created !',name: this.processname ,Activity: 'process', dateDebut: this.dateCD, dateFin: this.dateCF}],
+          ActList: [{id: 1,title: '',name:'' ,Activity: '', dateDebut: '', dateFin: ''}],
           newText: '',
           nextId: 2,
           arr: [{nb: 1, Activity: 'process', state: 'none', ActivityName: '', dateDD:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateDF:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), duree: "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S", dateCD: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateCF: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), Tcontrainte: ''}],
@@ -324,17 +326,20 @@ export default ({
           ActivityName: this.ActivityName,
           dateCD: this.dateCD,
           dateCF: this.dateCF,
-          Tcontrainte: this.Tcontrainte
+          Tcontrainte: this.Tcontrainte,
+          condition: this.Condition
         })
         }
         this.select= 'none';
       },
       //Add to hierarchy------------------
-      AddNewAct: function(text, n){
+      AddNewAct: function(text, n, cd, cf){
          this.ActList.push({
         id: this.nextId++,
         title: text,
-        name: n
+        name: n,
+        datecd: cd,
+        datecf: cf
       })
       this.newText = '';
       },
@@ -357,11 +362,11 @@ export default ({
           root.setAttribute("DUR", "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+0+"S");
           root.setAttribute("CD", '');
           root.setAttribute("CF", '');
-          root.setAttribute("TC", '');
+          root.setAttribute("TC", 'Entre');
           root.setAttribute("InstantDebut", 0);
           //verifier le contenu du tableau d'activites
           for(var i=0; i < this.arr.length; i++){
-            console.log(this.arr[i].nb, this.arr[i].Activity, this.arr[i].ActivityName, this.arr[i].dateDD, this.arr[i].dateDF, this.arr[i].dateCD, this.arr[i].dateCF, this.arr[i].duree, this.arr[i].Tcontrainte);
+            console.log(this.arr[i].nb, this.arr[i].Activity, this.arr[i].ActivityName, this.arr[i].dateDD, this.arr[i].dateDF, this.arr[i].dateCD, this.arr[i].dateCF, this.arr[i].duree, this.arr[i].Tcontrainte, this.arr[i].condition);
           }
           //creation du fichier -----------------------
           for(var i=1; i < this.arr.length; i++){
@@ -413,7 +418,7 @@ export default ({
                    }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile(this.arr[x].ActivityName, x); 
+                    var t = this.GenWhile(this.arr[x].condition,x); 
                     tmp.appendChild(t);
                    }
                    }else{
@@ -459,7 +464,7 @@ export default ({
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenIf('while',this.arr[x].ActivityName,x); 
+                    var y = this.GenIf('while',this.arr[x].condition,x); 
                     tmp.lastChild.appendChild(y);
                     }
                   }
@@ -473,7 +478,7 @@ export default ({
            if(this.arr[i].Activity == 'flow'){
      //Si c'est un element simple ---------------------------------------------------------------
             if(this.arr[i].state == 'Simple'){
-                  var activite = this.GenStr('flow',this.arr[i].ActivityName);
+                  var activite = this.GenStr('flow',this.arr[i].ActivityName,i);
                   root.appendChild(activite);
                   var tmp = activite;
                   var x = i+1;
@@ -483,12 +488,12 @@ export default ({
               if(this.arr[x].state == 'Parallel'){
                     //Si l'activite est une SEQUENCE--------------------
                 if(this.arr[x].Activity == 'sequence'){
-                    var t = this.GenStr('sequence',this.arr[x].ActivityName); 
+                    var t = this.GenStr('sequence',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un FLOW--------------------
                 if(this.arr[x].Activity == 'flow'){
-                    var t = this.GenStr('flow',this.arr[x].ActivityName); 
+                    var t = this.GenStr('flow',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un GET-------------------- 
@@ -513,12 +518,12 @@ export default ({
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var t = this.GenIf('if',this.arr[x].ActivityName); 
+                    var t = this.GenIf('if',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                      //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile(this.arr[x].ActivityName); 
+                    var t = this.GenWhile(this.arr[x].condition,x); 
                     tmp.appendChild(t);
                     }
                     //Fin des sous activites ---------------------------
@@ -530,12 +535,12 @@ export default ({
                   if(this.arr[x].state == ('UnderCondition'||'InLoop'||'Sequential')){
                      //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var y = this.GenStr('sequence',this.arr[x].ActivityName); 
+                    var y = this.GenStr('sequence',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var y = this.GenStr('flow',this.arr[x].ActivityName); 
+                    var y = this.GenStr('flow',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un GET-------------------- 
@@ -560,12 +565,12 @@ export default ({
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var y = this.GenIf('if',this.arr[x].ActivityName); 
+                    var y = this.GenIf('if',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenWhile(this.arr[x].ActivityName); 
+                    var y = this.GenWhile(this.arr[x].condition,x); 
                     tmp.lastChild.appendChild(y);
                     }
                   }
@@ -580,7 +585,7 @@ export default ({
              if(this.arr[i].Activity == 'if'){
               //Si c'est un element simple ---------------------------------------------------------------
               if(this.arr[i].state == 'Simple'){
-                  var activite = this.GenIf('if',this.arr[i].ActivityName);
+                  var activite = this.GenIf('if',this.arr[i].ActivityName,i);
                   root.appendChild(activite);
                    var tmp = activite;
                   var x = i+1;
@@ -590,12 +595,12 @@ export default ({
                   if(this.arr[x].state == 'UnderCondition'){
                     //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var t = this.GenStr('sequence',this.arr[x].ActivityName); 
+                    var t = this.GenStr('sequence',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un FLOW--------------------
                       if(this.arr[x].Activity == 'flow'){
-                    var t = this.GenStr('flow',this.arr[x].ActivityName); 
+                    var t = this.GenStr('flow',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un GET-------------------- 
@@ -620,12 +625,12 @@ export default ({
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var t = this.GenIf('if',this.arr[x].ActivityName); 
+                    var t = this.GenIf('if',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile(this.arr[x].ActivityName); 
+                    var t = this.GenWhile(this.arr[x].condition,x); 
                     tmp.appendChild(t);
                     }
                   }else{
@@ -636,12 +641,12 @@ export default ({
                   if(this.arr[x].state == ('Parallel'||'InLoop'||'Sequential')){
                      //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var y = this.GenStr('sequence',this.arr[x].ActivityName); 
+                    var y = this.GenStr('sequence',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var y = this.GenStr('flow',this.arr[x].ActivityName); 
+                    var y = this.GenStr('flow',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un GET-------------------- 
@@ -666,12 +671,12 @@ export default ({
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var y = this.GenIf('if',this.arr[x].ActivityName); 
+                    var y = this.GenIf('if',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenWhile(this.arr[x].ActivityName); 
+                    var y = this.GenWhile(this.arr[x].condition,x); 
                     tmp.lastChild.appendChild(y);
                     }
                   }
@@ -684,7 +689,7 @@ export default ({
              if(this.arr[i].Activity == 'while'){
               //Si c'est un element simple ---------------------------------------------------------------
               if(this.arr[i].state == 'Simple'){
-                  var activite = this.GenWhile(this.arr[i].ActivityName);
+                  var activite = this.GenWhile(this.arr[i].condition,i);
                   root.appendChild(activite);
                    var tmp = activite;
                   var x = i+1;
@@ -694,12 +699,12 @@ export default ({
                   if(this.arr[x].state == 'InLoop'){
                     //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var t = this.GenStr('sequence',this.arr[x].ActivityName); 
+                    var t = this.GenStr('sequence',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un FLOW--------------------
                       if(this.arr[x].Activity == 'flow'){
-                    var t = this.GenStr('flow',this.arr[x].ActivityName); 
+                    var t = this.GenStr('flow',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un GET-------------------- 
@@ -724,12 +729,12 @@ export default ({
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var t = this.GenIf('if',this.arr[x].ActivityName); 
+                    var t = this.GenIf('if',this.arr[x].ActivityName,x); 
                     tmp.appendChild(t);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var t = this.GenWhile(this.arr[x].ActivityName); 
+                    var t = this.GenWhile(this.arr[x].condition,x); 
                     tmp.appendChild(t);
                     }
                   }else{
@@ -740,12 +745,12 @@ export default ({
                   if(this.arr[x].state == ('Parallel'||'UnderCondition'||'Sequential')){
                      //Si l'activite est une SEQUENCE--------------------
                       if(this.arr[x].Activity == 'sequence'){
-                    var y = this.GenStr('sequence',this.arr[x].ActivityName); 
+                    var y = this.GenStr('sequence',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un FLOW--------------------
                      if(this.arr[x].Activity == 'flow'){
-                    var y = this.GenStr('flow',this.arr[x].ActivityName); 
+                    var y = this.GenStr('flow',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un GET-------------------- 
@@ -770,12 +775,12 @@ export default ({
                     }
                     //Si l'activite est un IF--------------------
                       if(this.arr[x].Activity == 'if'){
-                    var y = this.GenIf('if',this.arr[x].ActivityName); 
+                    var y = this.GenIf('if',this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
-                    var y = this.GenWhile(this.arr[x].ActivityName); 
+                    var y = this.GenWhile(this.arr[x].ActivityName,x); 
                     tmp.lastChild.appendChild(y);
                     }
                   }
@@ -793,11 +798,12 @@ export default ({
             var element = root.childNodes[i];
             if(element.nodeType==1){
               var j = element.childNodes.length;
+              if(j>1){
               var element2 = element.childNodes[0];
               if(element2 != null){
               if(element2.nodeType==1){
-                //si c'est un objet --------------------------------------------------------
-                if(element2.hasAttribute("name") == false){
+              //si c'est un objet --------------------------------------------------------
+                if(element2.hasAttribute("TC") == false){
               //element2 = extensionActivity / firstChild (put/get/post/delete)
               var dd = element2.firstElementChild.getAttribute('DD');
               element.setAttribute("DD",dd);
@@ -836,6 +842,7 @@ export default ({
               var d = parseInt(match1.groups['seconds']) + parseInt(match2.groups['seconds']);
               durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
               element.setAttribute("DUR",durr);
+              }
               }
             }
             }
@@ -934,13 +941,13 @@ export default ({
         },
 
         //IF ELSE-------------------------------------------------
-        GenIf: function(ActivityType, conditionIF){
+        GenIf: function(ActivityType, conditionIF, i){
           var doc = document.implementation.createDocument("", "", null);
           var iff = doc.createElement('if');
             iff.setAttribute("DUR",'');
-            iff.setAttribute("CD", this.dateCD);
-            iff.setAttribute("CF", this.dateCF);
-            iff.setAttribute("TC", this.Tcontrainte);
+            iff.setAttribute("CD", this.arr[i].dateCD);
+            iff.setAttribute("CF", this.arr[i].dateCF);
+            iff.setAttribute("TC", this.arr[i].Tcontrainte);
             iff.setAttribute("InstantDebut", 0);
           var ifcondition = doc.createElement('condition');
           var conditionif = doc.createTextNode(conditionIF);
@@ -953,13 +960,13 @@ export default ({
           return iff;
         },
         //BOUCLE WHILE -------------------------------
-      GenWhile: function(conditionWhile){
+      GenWhile: function(conditionWhile, i){
         var doc = document.implementation.createDocument("", "", null);
         var whi = doc.createElement('while');
             whi.setAttribute("DUR", '');
-            whi.setAttribute("CD", this.dateCD);
-            whi.setAttribute("CF", this.dateCF);
-            whi.setAttribute("TC", this.Tcontrainte);
+            whi.setAttribute("CD", this.arr[i].dateCD);
+            whi.setAttribute("CF", this.arr[i].dateCF);
+            whi.setAttribute("TC", this.arr[i].Tcontrainte);
             whi.setAttribute("InstantDebut", 0);
         var conditionn = doc.createElement('condition');
         var whicondition = doc.createTextNode(conditionWhile);
