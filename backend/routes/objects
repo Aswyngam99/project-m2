@@ -1,0 +1,23 @@
+const express = require('express');
+const { createObject, getObject, getObjects} = require('../controllers/objectController');
+const router = express.Router()
+
+// Student model
+let ObjectModel = require('../models/objectModel');
+
+//GET all objects
+router.get('/', getObjects)
+
+// GET a single object
+/*router.get('/:id', getObject)*/
+
+ // POST a new object
+router.post('/', createObject)
+
+  // DELETE an object
+  /*router.delete('/:id', deleteObject)
+
+  // UPDATE a new object
+  router.patch('/:id', updateObject)*/
+
+module.exports = router

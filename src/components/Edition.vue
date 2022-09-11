@@ -67,7 +67,7 @@
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects, TypeActivity = 'delete'">
                 <v-icon>mdi-web-remove</v-icon></v-btn>
                     <!-- bouton create/post -->
-                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects, TypeActivity = 'post'">
+                <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogcreate = !dialogcreate, TypeActivity = 'post'">
                 <v-icon>mdi-web-plus</v-icon></v-btn>
                     <!-- bouton update/put -->
                 <v-btn small v-ripple="{ class: 'primary--text' }" text color="#90CAF9" @click="dialogobjects = !dialogobjects, TypeActivity = 'put'">
@@ -85,7 +85,7 @@
           <v-card>
             <v-card-text>
              <h1 class="pa-4">Scenario name</h1>
-             <v-text-field v-model="processname" color="#673AB7" label="Scenario" placeholder="Type the name of the new scenario here ... " class="mt-8" outlined dense @keypress.enter="processdialog=!processdialog"></v-text-field>
+             <v-text-field v-model="processname" color="#673AB7" label="Scenario" placeholder="Type the name of the new scenario here ... " class="mt-8" outlined dense @keypress.enter="processdialog=!processdialog, AddNewAct(processname,'process', 'Undefined', 'Undefined')"></v-text-field>
             </v-card-text>
           </v-card>
         </v-dialog>
@@ -158,16 +158,58 @@
           <!-- ADD ACTIVITY TO FILE BUTTON----------------------------------------------------------------------------------------- -->
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="dialogcondition = false, Addd(TypeActivity), AddNewAct()">Add activity</v-btn>
+            <v-btn color="primary" @click="dialogcondition = false, Addd(TypeActivity), AddNewAct(ActivityName,TypeActivity, dateCD, dateCF)">Add activity</v-btn>
           </v-card-actions>
           </v-card-text>
         </v-card>
       </v-dialog>
-      <!-- Objetcs ------------------------------------------------------------------------- -->
+      <!-- ADD OBJECT --------------------------------------------------------------------------------------->
+       <v-dialog v-model="dialogcreate" max-width="500px">
+          <v-card>
+            <v-card-text>
+          <!--Object Name-------------------------------------------------------------->
+            <v-text-field v-model="objects.name" color="#673AB7" label="Name" placeholder="Type the object name here ... " class="mt-8" outlined dense></v-text-field>
+            <v-text-field v-model="objects.uri" color="#673AB7" label="URI" placeholder="Type the URI here ... " class="mt-8" outlined dense></v-text-field>
+          <!---------------------------------------------------------------------------------------------->
+          <!-- Activity state ---------------------------------------------------------------------------->
+            <v-select  v-model="select" :items="ActivityChoice" label="Select" single-line @change="selection()"></v-select>
+            <!-- DD -->
+            <v-menu v-model="menuDD" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field v-model="dateDD" label="DD" placeholder="Must start at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+              </template>
+              <v-date-picker v-model="dateDD" @input="menuDD = false"></v-date-picker>
+            </v-menu>
+              <!-- DF -->
+             <v-menu v-model="menuDF" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field v-model="dateDF" label="DF" placeholder="Must end at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+              </template>
+              <v-date-picker v-model="dateDF" @input="menuDF = false"></v-date-picker>
+            </v-menu>
+        <!-- DUR -->
+              <v-text-field v-model="year" color="#673AB7" type="number" label="Year" value="0"></v-text-field>
+              <v-text-field v-model="month" color="#673AB7" type="number" label="Month" value="0"></v-text-field>
+              <v-text-field v-model="day" color="#673AB7" type="number" label="Day" value="0"></v-text-field>
+              <v-text-field v-model="hours" color="#673AB7" type="number" label="Hours" value="0"></v-text-field>
+              <v-text-field v-model="minutes" color="#673AB7" type="number" label="Minutes" value="0"></v-text-field>
+              <v-text-field v-model="seconds" color="#673AB7" type="number" label="Seconds" value="0"></v-text-field>
+          </v-card-text>
+         <v-card-actions>
+          <v-spacer></v-spacer>
+         <v-btn color="primary" @click="dialogcreate = false, Addd(TypeActivity),AddNewAct(ActivityName,TypeActivity, dateDD, dateDF), addObject()">Add activity</v-btn>
+        </v-card-actions>
+        </v-card>
+        </v-dialog>
+      <!-- Objetcs GET/PUT/DELETE------------------------------------------------------------------------- -->
       <v-dialog v-model="dialogobjects" max-width="500px">
           <v-card>
             <v-card-text>
           <!-- LIST OF OBJECTS (Object Name)-------------------------------------------------------------->
+          <div v-if="TypeActivity == 'post'">
+            <v-text-field v-model="ActivityName" color="#673AB7" label="Name" placeholder="Type the object name here ... " class="mt-8" outlined dense></v-text-field>
+          </div>
+          <v-select v-model="ActivityName" :items="things" label="Choose an object" color="#90CAF9" light item-text="name" @change="ob()"></v-select>
           <v-select v-model="ActivityName" :items="things" label="Choose an object" color="#90CAF9" light item-text="name" @change="ob()"></v-select>
           <!---------------------------------------------------------------------------------------------->
           <!-- Activity state ------------------------------------------- -->
@@ -196,28 +238,30 @@
           </v-card-text>
          <v-card-actions>
           <v-spacer></v-spacer>
-         <v-btn color="primary" @click="dialogobjects = false, Addd(TypeActivity),AddNewAct()">Add activity</v-btn>
+         <v-btn color="primary" @click="dialogobjects = false, Addd(TypeActivity),AddNewAct(ActivityName,TypeActivity, dateDD, dateDF)">Add activity</v-btn>
         </v-card-actions>
         </v-card>
         </v-dialog>
         <!-- Affichage de la hierarchie -->
         <v-row>
           <v-col cols="12" md="6">
-            <v-card tile class="hierarchy elevation-6 mt-4">
-              <v-list class="hier pa-6">
-              <v-list-item class="blublu--text text-right" v-for="(Act,index) in ActList" :key="Act.id">
+            <v-card tile class="hierarchy2 elevation-6 mt-4 text-center d-flex flex-column align-center">
+              <v-list class="hier pa-10">
+                <div class="listitem">
+              <v-list-item class="blublu--text" v-for="(Act,index) in ActList" :key="Act.id">
               <v-list-item-action>
-              <v-list-item-content> Name of the activity / object <v-icon dark>mdi-arrow-right-thin</v-icon>{{Act.title}}</v-list-item-content>
-              <v-list-item-content> Execution type <v-icon dark>mdi-arrow-right-thin</v-icon> {{Act.name}}</v-list-item-content> 
-              <v-list-item-content><v-icon dark color="green">mdi-timer-alert</v-icon> Must start at : {{Act.datecf}}</v-list-item-content>
-              <v-list-item-content><v-icon dark color="red">mdi-timer-alert</v-icon> Must end at : {{Act.datecf}}</v-list-item-content>
+              <v-list-item-title> Name of the activity / object <v-icon dark>mdi-arrow-right-thin</v-icon>{{Act.title}}</v-list-item-title>
+              <v-list-item-title> Execution type <v-icon dark>mdi-arrow-right-thin</v-icon> {{Act.name}}</v-list-item-title> 
+              <v-list-item-title><v-icon dark color="green">mdi-timer-alert</v-icon> Must start at : {{Act.datecd}}</v-list-item-title>
+              <v-list-item-title><v-icon dark color="red">mdi-timer-alert</v-icon> Must end at : {{Act.datecf}}</v-list-item-title>
               </v-list-item-action>  
               </v-list-item>
+              </div>
               </v-list>
             </v-card>
           </v-col>
           <v-col cols="12" md="6">
-            <v-card tile class="hierarchy elevation-6 mt-4 text-center d-flex flex-column align-center justify-center">
+            <v-card tile class="hierarchy1 elevation-6 mt-4 text-center d-flex flex-column align-center justify-center">
             <v-card-text>
                <div class=" text-center Rprimary--text">
             <h1>Save your scenario</h1>
@@ -245,6 +289,7 @@
 </template>
 <!-- JS ------------------------------------------------------------------------------------------------->
 <script>
+import axios from "axios";
 export default ({
     data() {
     return {
@@ -272,12 +317,13 @@ export default ({
       hours: '0',
       minutes: '0',
       seconds: '0',
-      //URI
-      URI: 'http://Exemple/ouvrir',
+      //OBJECT
+      objects: { name: '', uri: ''},
       //FORMS
       dialogstructure: false,
       dialogcondition: false,
       dialogobjects: false,
+      dialogcreate: false,
       TypeActivity: '',
       buttonKey: 1,
       TC: [{text: 'Avant'}, {text: 'Entre'}, {text: 'Apres'}],
@@ -288,7 +334,7 @@ export default ({
           conditionIF: '',
           conditionWhile:'',
           ActivityType: ['sequence','flow','get','put','post','delete','if','ifelse','while'],
-          ActList: [{id: 1,title: '',name:'' ,Activity: '', dateDebut: '', dateFin: ''}],
+          ActList: [{title :'Lets get started'}],
           newText: '',
           nextId: 2,
           arr: [{nb: 1, Activity: 'process', state: 'none', ActivityName: '', dateDD:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateDF:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), duree: "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S", dateCD: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateCF: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), Tcontrainte: ''}],
@@ -298,6 +344,20 @@ export default ({
     }
    },
    methods: {
+    //ADD OBJECT to database
+      async mounted() {
+        const response = await axios.get("http://localhost:4000/api/objects/");
+        this.objects = response.data;
+      },
+      async addObject(){
+        console.log("executing request:", this.objects.name, this.objects.uri)
+        const response = await axios.post("http://localhost:4000/api/objects/", {
+        name: this.objects.name,
+        uri: this.objects.uri
+      })
+      console.log(response);
+      },
+    
     //selected object
     ob: function(){
       console.log(this.ActivityName);
@@ -988,11 +1048,18 @@ export default ({
 
 <!-- CSS ------------------------------------------------------------------------------------------------>
 <style scoped>
+.listitem {
+  width: 100%;
+}
 .toolbox {
     background-color: #673AB7 ;
 }
-.hierarchy {
+.hierarchy1 {
     background-color: #EDE7F6;
+    height: 900px;
+}
+.hierarchy2 {
+    background-color: #9FA8DA;
     height: 900px;
 }
 /* setting min-width is necessary for the width to work */
