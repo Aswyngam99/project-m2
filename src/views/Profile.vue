@@ -1,7 +1,7 @@
 <template>
 <div id="app">
   <Navbar/> 
-    <v-row class="gogo text-uppercase align-center dark">
+    <v-row class="text-uppercase align-center dark">
         <v-col>
         <h3 class="text-center blublu--text">My profile</h3>
         </v-col>

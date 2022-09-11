@@ -15,7 +15,7 @@
         </v-app-bar>
        <!-- Footer -->
         <v-footer flat bottom padless app color="Rprimary">
-            <v-col class="text-center blublu--text" cols="12">{{ new Date().getFullYear() }} — <strong>all rights reserved.</strong></v-col>
+            <v-col class="text-center blublu--text" cols="12">{{ new Date().getFullYear() }} — <strong> M&B all rights reserved — USTHB.</strong></v-col>
         </v-footer>
         <!-- Left Menu -->
         <v-navigation-drawer v-model="drawer" app class="Rprimary">

@@ -4,6 +4,8 @@ import LoginAndSignUp from '../views/LoginAndSignUp.vue'
 import HomePage from '../views/HomePage.vue'
 import Editor from '../views/Editor.vue'
 import Objects from '../views/Objects.vue'
+import Profile from '../views/Profile.vue'
+import Scenarios from '../views/Scenarios.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -26,7 +28,17 @@ const routes = [
     path: '/objects',
     name: 'objects',
     component: Objects
-  }
+  },
+  {
+    path: '/profiles',
+    name: 'profiles',
+    component: Profile
+  },
+  {
+    path: '/scenarios',
+    name: 'scenarios',
+    component: Scenarios
+  },
 ]
 
 const router = new VueRouter({

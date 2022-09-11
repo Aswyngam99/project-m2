@@ -1,11 +1,13 @@
 <template>
 <div id="app">
   <Navbar/> 
-    <v-row class="gogo text-uppercase align-center dark">
+    <v-row class="text-uppercase align-center dark">
         <v-col>
         <h3 class="text-center blublu--text">My objects</h3>
         </v-col>
+        
     </v-row>
+
   <v-row class="gogo text-uppercase align-center">
         <v-col>
         <v-btn text dark color="Rprimary" v-ripple="{ class: 'white--text' }" @click="showObjects()"><v-icon>mdi-database-refresh-outline</v-icon>Refresh</v-btn>
@@ -14,11 +16,13 @@
     <v-card color="#9FA8DA" height="800px">
          <v-data-table :headers="headers" :items="things" :items-per-page="10" class="elevation-1 #EDE7F6">
         <template v-slot:items="props">
+          <tr>
           <td>{{ props.item.name }}
             <v-btn text><v-icon>mdi-database-remove-outline</v-icon></v-btn>
             <v-btn text><v-icon>mdi-database-edit-outline</v-icon></v-btn>
           </td>
           <td>{{ props.item.uri }}</td>
+          </tr>
         </template>
         
         </v-data-table>
