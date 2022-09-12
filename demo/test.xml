@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<process name="processus de fabrication de liquide" DD="20/08/2022" DF="01/09/2022" DUR="P0Y0M0DT0H0M45S" CD="20/08/2022" CF="30/08/2022" TC="Entre" InstantDebut=" ">
+	<variables>
+		<variable name="EtatVanneRecyclage"/>
+		<variable name="EtatVanneTransfert"/>
+	</variables>
+    
+	<sequence name="Phase d'approvisionnement" DD="20/08/2022" DF="25/08/2022" DUR="P0Y0M0DT0H0M10S" CD="20/08/2022" CF="25/08/2022" TC="Entre" InstantDebut=" ">
+		<!-- Arrivée du premier camion -->
+		<extensionActivity>
+			<put name="PA1" uri = "http://PompeApprovisionnement1/ouvrir" DD="20/08/2022" DF="22/08/2022" DUR="P0Y0M0DT0H0M2S" InstantDebut=" "></put>
+		</extensionActivity>
+		<!-- Arrivée du deuxieme camion -->
+		<extensionActivity>
+			<put name="PA2" uri = "http://PompeApprovisionement2/ouvrir" DD="19/08/2022" DF="23/08/2022" DUR="P0Y0M0DT0H0M3S" InstantDebut=" "></put>
+		</extensionActivity>
+		<!-- Arrivée du troisieme camion -->
+		<extensionActivity>
+			<put name="PA3" uri = "http://PompeApprovisionement3/ouvrir" DD="23/08/2022" DF="25/08/2022" DUR="P0Y0M0DT0H0M5S" InstantDebut=" "></put>
+		</extensionActivity>
+	</sequence>
+	<sequence name="Phase de mixage" DD="26/08/2022" DF="26/08/2022" DUR="P0Y0M0DT0H0M30S" CD="30/08/2022" TC="Avant" InstantDebut=" ">
+		<!-- Envoie de la premiere matiere premiere -->
+		<extensionActivity>
+			<put name="PM1" uri = "http://PompeMatierePremiere1/ouvrir" DD="01/09/2022" DF="06/09/2022" DUR="P0Y0M0DT0H0M5S" InstantDebut=" "></put>
+		</extensionActivity>
+		<!-- Envoie de la deuxieme matiere premiere -->
+		<extensionActivity>
+			<put name="PM2" uri = "http://PompeMatierePremiere2/ouvrir" DD="25/08/2022" DF="26/08/2022" DUR="P0Y0M0DT0H0M5S" InstantDebut=" "></put>
+		</extensionActivity>
+		<!-- Commencer le mixage -->
+		<while DD="26/08/2022" DF="26/08/2022" DUR="P0Y0M0DT0H0M20S" CD="26/08/2022" CF="28/08/2022" TC="Entre" InstantDebut=" ">
+			<condition> EtatVanneRecyclage = ouverte AND EtatVanneTransfert = fermée </condition>
+			<flow name="Mixage" DD="30/08/2022" DF="31/08/2022" DUR="P0Y0M0DT0H0M20S" CD="30/08/2022" CF="31/08/2022" TC="Entre" InstantDebut=" ">
+				<extensionActivity>
+					<put name="PTR" uri = "http://pompeTransfertRecyclage/ouvrir" DD="30/08/2022" DF="26/08/2022" DUR="P0Y0M0DT0H0M10S" InstantDebut=" "></put>
+				</extensionActivity>
+				<sequence name="Mixage2" DD="26/08/2022" DF="26/08/2022" DUR="P0Y0M0DT0H0M10S" CD="26/08/2022" CF="28/08/2022" TC="Entre" InstantDebut=" ">
+					<!-- Envoie de la troisieme matiere premiere -->
+					<extensionActivity>
+						<put name="PM3" uri = "http://PompeMatierePremiere3/ouvrir" DD="26/08/2022" DF="26/08/2022" DUR="P0Y0M0DT0H0M3S" InstantDebut=" "></put>
+					</extensionActivity>
+					<!-- Envoie des additifs -->
+					<extensionActivity>
+						<put name="Additifs" uri = "http://PompeAdditifs/ouvrir" DD="26/08/2022" DF="26/08/2022" DUR="P0Y0M0DT0H0M3S" InstantDebut=" "></put>
+					</extensionActivity>
+					<!-- Envoie de l'eau -->
+					<extensionActivity>
+						<put name="Eau" uri = "http://PompeEau/ouvrir" DD="26/08/2022" DF="26/08/2022" DUR="P0Y0M0DT0H0M3S" InstantDebut=" "></put>
+					</extensionActivity>
+				</sequence>
+			</flow>
+		</while>
+	</sequence>
+	<while DD="30/08/2022" DF="30/08/2022" DUR="P0Y0M0DT0H0M25S" CF="30/08/2022" TC="Apres" InstantDebut=" ">
+		<condition> EtatVanneTransfert = ouverte AND EtatVanneRecyclage = fermée </condition>
+		<sequence name="Transfert du produit et stockage" DD="30/08/2022" DF="30/08/2022" DUR="P0Y0M0DT0H0M25S" CF="30/08/2022" TC="Apres" InstantDebut=" ">
+		<!-- Transfert du produit -->
+			<extensionActivity>
+				<put name="PTR" uri = "http://PompeTransfertRecyclage/ouvrir" DD="26/08/2022" DF="27/08/2022" DUR="P0Y0M0DT0H0M5S" InstantDebut=" "></put>
+			</extensionActivity> 
+		<!-- Remplissage du produit dans les bouteilles -->
+			<extensionActivity>
+				<put name="Remplissage" uri = "http://RemplirBouteille/remplir" DD="30/08/2022" DF="30/08/2022" DUR="P0Y0M0DT0H0M10S" InstantDebut=" "></put>
+			</extensionActivity>
+		<!-- Stockage des bouteilles dans les cartons -->
+			<extensionActivity>
+				<put name="Stockage" uri = "http://StockerBouteille/stocker" DD="30/08/2022" DF="30/08/2022" DUR="P0Y0M0DT0H0M10S" InstantDebut=" "></put>
+			</extensionActivity>
+		</sequence>
+	</while>
+</process>	
+
+
+
+
+
+
+
+

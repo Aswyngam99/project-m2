@@ -3,7 +3,7 @@
  <div>
   <Navbar/>
   <v-card color="white">
-      <v-img src='../../public/DrawingAmel.png'></v-img>
+      <v-img src='../../public/homepage.png'></v-img>
   </v-card>
  </div>
 </template>

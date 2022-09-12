@@ -210,7 +210,6 @@
             <v-text-field v-model="ActivityName" color="#673AB7" label="Name" placeholder="Type the object name here ... " class="mt-8" outlined dense></v-text-field>
           </div>
           <v-select v-model="ActivityName" :items="things" label="Choose an object" color="#90CAF9" light item-text="name" @change="ob()"></v-select>
-          <v-select v-model="ActivityName" :items="things" label="Choose an object" color="#90CAF9" light item-text="name" @change="ob()"></v-select>
           <!---------------------------------------------------------------------------------------------->
           <!-- Activity state ------------------------------------------- -->
             <v-select  v-model="select" :items="ActivityChoice" label="Select" single-line @change="selection()"></v-select>
@@ -262,9 +261,18 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-card tile class="hierarchy1 elevation-6 mt-4 text-center d-flex flex-column align-center justify-center">
+              <v-alert v-model="alert" type="error">Conflit de recouvrement de dates détecté : DD =20/08/2022 et DF =01/09/2022 de l'element process (processus de fabrication de liquide) doivent etre Entre CD =20/08/2022 et CF =30/08/2022</v-alert>
+              <v-alert v-model="alert" type="error">Conflit de recouvrement de dates détecté: DD= 19/08/2022 et DF=23/08/2022 de put(PA2) doivent etre Entre CD=20/08/2022 et CF=25/08/2022 de sequence(Phase d'approvisionnement)</v-alert>
+              <v-alert v-model="alert" type="error">Conflit de recouvrement de dates détecté: DD= 01/09/2022 et DF=06/09/2022 de put(PM1) doivent etre Avant CD=30/08/2022 de sequence(Phase de mixage)</v-alert>
+              <v-alert v-model="alert" type="error">Conflit de recouvrement de dates détecté: DD= 26/08/2022 et DF=27/08/2022 de put(PTR) doivent etre Apres CF=30/08/2022 de sequence(Transfert du produit et stockage)</v-alert>
+              <v-alert v-model="alert" type="error">Conflit dans le recouvrement de date : enchainement des dates non respecté: DF=22/08/2022 de put(PA1) doit etre avant DD=19/08/2022 de put(PA2)</v-alert>
+              <v-alert v-model="alert" type="error">Conflit dans le recouvrement de date : enchainement des dates non respecté: DF=06/09/2022 de put(PM1) doit etre avant DD=25/08/2022 de put(PM2)</v-alert>
+              <v-alert v-model="alert" type="error">Conflit dans le recouvrement de date : enchainement des dates non respecté: DF=06/09/2022 de put(PM1) doit etre avant DD=26/08/2022 de while(PM2)</v-alert>
+
             <v-card-text>
                <div class=" text-center Rprimary--text">
             <h1>Save your scenario</h1>
+            
             <v-btn  @click="FileCreation()" text dark color="#dd52a3">Save<v-icon>mdi-content-save-plus</v-icon></v-btn>
             </div>
                  <v-card-title class="justify-center">Temporal verification</v-card-title>
@@ -273,7 +281,7 @@
                     <div>
                   <img src='../../public/nts-clock.png' alt="clock">
                   <v-spacer></v-spacer>
-                  <v-btn outlined color="#1c1d3b">Click to check<v-icon right>mdi-chart-timeline</v-icon></v-btn>
+                  <v-btn outlined color="#1c1d3b" @click="alert = !alert, Check()">Click to check<v-icon right>mdi-chart-timeline</v-icon></v-btn>
                   </div>
                   </v-col>
                 </v-row>
@@ -293,6 +301,8 @@ import axios from "axios";
 export default ({
     data() {
     return {
+      //MESSAGE
+      alert: false,
       //Scenario NAME FILE PROCESS
       processname:'',
       processdialog: false,
@@ -334,16 +344,42 @@ export default ({
           conditionIF: '',
           conditionWhile:'',
           ActivityType: ['sequence','flow','get','put','post','delete','if','ifelse','while'],
-          ActList: [{title :'Lets get started'}],
+          ActList: [],
           newText: '',
           nextId: 2,
           arr: [{nb: 1, Activity: 'process', state: 'none', ActivityName: '', dateDD:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateDF:(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), duree: "P"+this.year+"Y"+this.month+"M"+this.day+"DT"+this.hours+"H"+this.minutes+"M"+this.seconds+"S", dateCD: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), dateCF: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), Tcontrainte: ''}],
           nextNb: 2,
           select: 'none',
           ActivityChoice: ['Simple','Sequential','Parallel','UnderCondition','InLoop'],
+          conflits: ''
     }
    },
+    watch: {
+    alert(new_val){
+      if(new_val){
+        setTimeout(()=>{this.alert=false},3000)
+      }
+    }  
+  },
    methods: {
+    //CHECK
+    async Check() {
+      const CONFLITS = 'http://localhost:8010/api/request/result';
+      const response = await axios.get(CONFLITS)
+      .then(response => this.conflits = response.data)
+      console.log(this.conflits)
+        .catch(error => {
+      this.errorMessage = error.message;
+      console.error("There was an error!", error);
+    });
+      console.log(response);
+    },
+    //SEND
+    async send(xmlstring){
+      const CONFLITS = 'http://localhost:8010/api/request/newXml';
+      const response = await axios.post(CONFLITS, xmlstring)
+      console.log(response);
+    },
     //ADD OBJECT to database
       async mounted() {
         const response = await axios.get("http://localhost:4000/api/objects/");
@@ -357,7 +393,6 @@ export default ({
       })
       console.log(response);
       },
-    
     //selected object
     ob: function(){
       console.log(this.ActivityName);
@@ -917,8 +952,10 @@ export default ({
           root.setAttribute("DUR", durr);
           root.setAttribute("CD",cd);
           root.setAttribute("CF", cf);
+          
           var xmlString = serializer.serializeToString(doc);
           console.log(xmlString); 
+          this.send(xmlString);
         },
          //SEQUENCE/FLOW----------------------------------------------------
         GenStr: function(ActivityType, ActivityName, i){
@@ -1056,11 +1093,11 @@ export default ({
 }
 .hierarchy1 {
     background-color: #EDE7F6;
-    height: 900px;
+    height: 1200px;
 }
 .hierarchy2 {
     background-color: #9FA8DA;
-    height: 900px;
+    height: 1200px;
 }
 /* setting min-width is necessary for the width to work */
 .v-btn {
