@@ -20,10 +20,10 @@ public class readXml {
 			  //obtenir une instance de document xml sérialisé 
 			  SAXBuilder builder = new SAXBuilder();
 		      builder.setIgnoringElementContentWhitespace(true);
-		      Document document = builder.build(new File("test.xml"));
+		      Document document = builder.build(new File("test2.xml"));
               //recuperer la racine du document 
 		      Element elementRacine = document.getRootElement();
-			  	msg = verifier_CoherenceTemporelle ( elementRacine )+"\n"+verifier_RecouvrementDates ( elementRacine);
+			  	msg = verifier_CoherenceTemporelle ( elementRacine )+""+verifier_RecouvrementDates ( elementRacine);
 			  
 		}
 		catch(JDOMException e)
@@ -53,9 +53,9 @@ public class readXml {
 		msg3= verifier_EnchainementDates_ElementStructure_Fils (element,"0");
 
 		//Etape 4 : verifier la progression temporelle entre les fils directs des activités structurés
-		verifier_EnchainementDates_SousElementStructure (element,"0");
+		msg4= verifier_EnchainementDates_SousElementStructure (element,"0");
   
-        return msg1+"\n"+msg2+"\n "+msg3+"\n "+msg4+"\n";
+        return msg1+msg2+msg3+msg4;
 	}
 
 	//algo 3
@@ -156,7 +156,7 @@ public class readXml {
 					//verifier le processus de progression temporelle entre process et fils direct
 					if( Integer.parseInt( InstantDebut_pere ) > Integer.parseInt( InstantDebut ) ) {
                         OK = false;
-						msg =msg+"\n Erreur! progression temporelle non respectée:  l'instant début de "+element.getName()+"("+name_pére+") doit etre avant l'instant debut de"+elementFils.getName()+"("+name_fils+")\n";
+						msg =msg+"Erreur! progression temporelle non respectée:  l'instant début de "+element.getName()+"("+name_pére+") doit etre avant l'instant debut de"+elementFils.getName()+"("+name_fils+")";
 					}
 					attributFils.setValue(InstantDebut);
 					//System.out.println(attributFils.getName()+" = "+attributFils.getValue());
@@ -257,7 +257,7 @@ public class readXml {
 					//verifier le processus de progression temporelle entre process et fils direct
 					if( Integer.parseInt( Instant_Debut_precedent ) > Integer.parseInt( InstantDebut ) ) {
                         OK = false;
-						msg=msg+"\n Erreur! progression temporelle non respectée: l'instant début de "+element.getName()+" doit etre inferieur à l'instant debut de "+elementFils.getName()+"\n";
+						msg=msg+"Erreur! progression temporelle non respectée: l'instant début de "+element.getName()+" doit etre inferieur à l'instant debut de "+elementFils.getName()+"";
 					}
 					
 					attributFils.setValue(InstantDebut);
@@ -393,7 +393,7 @@ public class readXml {
 
 						//System.out.println("pére: "+element.getName()+" ID-pére: "+InstantDebut_pere+" ----> fils : "+elementFils.getName()+" ID-fils: "+InstantDebut_precedent);
 						if(Integer.parseInt(InstantDebut_pere) > Integer.parseInt(InstantDebut_precedent)){
-							msg= msg + "\n Conflit inter-element détecté! entre L'instant debut du pére: "+element.getName()+"avec l'instant debut de son fils : "+elementFils.getName()+"\n";
+							msg= msg + "Conflit inter-element détecté! entre L'instant debut du pére: "+element.getName()+"avec l'instant debut de son fils : "+elementFils.getName()+"";
 						}
 					}
 					
@@ -498,7 +498,7 @@ public class readXml {
 
 															//System.out.println( "ID: "+InstantDebut_precedent+" ID-fils: "+InstantDebut);
 															if(Integer.parseInt(InstantDebut_precedent) > InstantDebut){
-																msg = msg +"\n Conflit inter-element! entre les fils de "+element.getName()+"\n";
+																msg = msg +"Conflit inter-element! entre les fils de "+element.getName()+"";
 															}
 														}
 														attributFils.setValue(Integer.toString(InstantDebut));
@@ -602,15 +602,15 @@ public class readXml {
 				switch (TC){
 					case "Avant": if(DD.compareTo(CD)>0 || DF.compareTo(CD)>0 )
 						{ ok = false;
-							msg=" \n Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+element.getName()+" ("+name+") doivent etre "+TC+" CD ="+CD_String+"\n";}
+							msg="Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+element.getName()+" ("+name+") doivent etre "+TC+" CD ="+CD_String+"";}
 						break;
 					case "Entre": if(DD.compareTo(CD)<0 || DF.compareTo(CF)>0 )
 						{ ok = false;
-						  msg=" \n Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+element.getName()+" ("+name+") doivent etre "+ TC +" CD ="+CD_String+" et CF ="+CF_String+"\n";} 
+						  msg="Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+element.getName()+" ("+name+") doivent etre "+ TC +" CD ="+CD_String+" et CF ="+CF_String+"";} 
 						break;
 					case "Apres": if(DD.compareTo(CF)<0 || DF.compareTo(CF)<0)
 						{ ok = false;
-						  msg=" \n Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+element.getName()+" ("+name+") doivent etre "+TC+" CF ="+CF_String+"\n";} 
+						  msg="Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+element.getName()+" ("+name+") doivent etre "+TC+" CF ="+CF_String+"";} 
 						break; 
 				}
 				
@@ -677,15 +677,15 @@ public class readXml {
 				switch (TC){
 					case "Avant": if(DD.compareTo(CD)>0 || DF.compareTo(CD)>0 )
 						{ ok = false;
-						  msg="Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+elementFils.getName()+" ("+name+") doivent etre "+TC+" CD ="+CD_String+"\n";} 
+						  msg="Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+elementFils.getName()+" ("+name+") doivent etre "+TC+" CD ="+CD_String+"";} 
 						break;
 					case "Entre": if(DD.compareTo(CD)<0 || DF.compareTo(CF)>0 )
 						{ ok = false;
-						  msg=" \n Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+elementFils.getName()+" ("+name+") doivent etre "+ TC +" CD ="+CD_String+" et CF ="+CF_String+"\n";} 
+						  msg="Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+elementFils.getName()+" ("+name+") doivent etre "+ TC +" CD ="+CD_String+" et CF ="+CF_String+"";} 
 						break;
 					case "Apres": if(DD.compareTo(CF)<0 || DF.compareTo(CF)<0)
 						{ ok = false;
-						  msg="\n Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+elementFils.getName()+" ("+name+") doivent etre "+TC+" CF ="+CF_String+"\n";} 
+						  msg="Conflit de recouvrement de dates détecté : DD ="+DD_String+" et DF ="+DF_String+" de l'element "+elementFils.getName()+" ("+name+") doivent etre "+TC+" CF ="+CF_String+"";} 
 						break; 
 				}
 				}
@@ -794,15 +794,15 @@ public class readXml {
 			switch (TC){
 				case "Avant": if(DD.compareTo(CD)>0 || DF.compareTo(CD)>0 )
 					{ ok = false;
-					  msg ="\n Conflit de recouvrement de dates détecté: DD= "+DD_String+" et DF="+DF_String+" de "+elementFils.getName()+"("+name_fils+") doivent etre "+TC+" CD="+CD_String+" de "+element.getName()+"("+name_pere+") \n";} 
+					  msg ="Conflit de recouvrement de dates détecté: DD= "+DD_String+" et DF="+DF_String+" de "+elementFils.getName()+"("+name_fils+") doivent etre "+TC+" CD="+CD_String+" de "+element.getName()+"("+name_pere+")";} 
 					break;
 				case "Entre": if(DD.compareTo(CD)<0 || DF.compareTo(CF)>0 )
 					{ ok = false;
-						msg="\n Conflit de recouvrement de dates détecté: DD= "+DD_String+" et DF="+DF_String+" de "+elementFils.getName()+"("+name_fils+") doivent etre "+TC+" CD="+CD_String+" et CF="+ CF_String+" de "+element.getName()+"("+name_pere+") \n";}  
+						msg="Conflit de recouvrement de dates détecté: DD= "+DD_String+" et DF="+DF_String+" de "+elementFils.getName()+"("+name_fils+") doivent etre "+TC+" CD="+CD_String+" et CF="+ CF_String+" de "+element.getName()+"("+name_pere+")";}  
 					break;
 				case "Apres": if(DD.compareTo(CF)<0 || DF.compareTo(CF)<0)
 					{ ok = false;
-						msg="\n Conflit de recouvrement de dates détecté: DD= "+DD_String+" et DF="+DF_String+" de "+elementFils.getName()+"("+name_fils+") doivent etre "+TC+" CF="+CF_String+" de "+element.getName()+"("+name_pere+") \n";}  
+						msg="Conflit de recouvrement de dates détecté: DD= "+DD_String+" et DF="+DF_String+" de "+elementFils.getName()+"("+name_fils+") doivent etre "+TC+" CF="+CF_String+" de "+element.getName()+"("+name_pere+")";}  
 					break; 
 			}
 
@@ -924,7 +924,7 @@ public class readXml {
 						
 						//comparer entre df du précedent et dd du svuivant
 						if(DF_precedent.compareTo(DD)>0){
-							msg= msg+"\n Conflit dans le recouvrement de date : enchainement des dates non respecté: DF="+DF_prec_String+" de "+elt_preced+"("+name_preced+") doit etre avant DD="+DD_String+" de "+elt_suivant+"("+name+") \n";
+							msg= msg+"Conflit dans le recouvrement de date : enchainement des dates non respecté: DF="+DF_prec_String+" de "+elt_preced+"("+name_preced+") doit etre avant DD="+DD_String+" de "+elt_suivant+"("+name+")";
 							//System.out.println("DFprecedent= "+DF_precedent);
 							//System.out.println("DD = "+DD);
 							ok = false;
@@ -987,7 +987,7 @@ public class readXml {
 
 	// convertir un string to date
 	private static Date stringToDate(String date) throws ParseException{
-		SimpleDateFormat sdFormat = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date d = sdFormat.parse(date);
 		return (d);
 	}

@@ -216,7 +216,7 @@
                <!-- DD -->
             <v-menu v-model="menuDD" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto">
               <template v-slot:activator="{ on, attrs }">
-                <v-text-field v-model="dateDD" label="DD" placeholder="Must start at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
+                <v-text-field v-model="dateDD" label="DD"  placeholder="Must start at ... " prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
               </template>
               <v-date-picker v-model="dateDD" @input="menuDD = false"></v-date-picker>
             </v-menu>
@@ -261,15 +261,13 @@
           </v-col>
           <v-col cols="12" md="6">
             <v-card tile class="hierarchy1 elevation-6 mt-4 text-center d-flex flex-column align-center justify-center">
-              <v-alert v-model="alert" type="error">Conflit de recouvrement de dates détecté : DD =20/08/2022 et DF =01/09/2022 de l'element process (processus de fabrication de liquide) doivent etre Entre CD =20/08/2022 et CF =30/08/2022</v-alert>
-              <v-alert v-model="alert" type="error">Conflit de recouvrement de dates détecté: DD= 19/08/2022 et DF=23/08/2022 de put(PA2) doivent etre Entre CD=20/08/2022 et CF=25/08/2022 de sequence(Phase d'approvisionnement)</v-alert>
-              <v-alert v-model="alert" type="error">Conflit de recouvrement de dates détecté: DD= 01/09/2022 et DF=06/09/2022 de put(PM1) doivent etre Avant CD=30/08/2022 de sequence(Phase de mixage)</v-alert>
-              <v-alert v-model="alert" type="error">Conflit de recouvrement de dates détecté: DD= 26/08/2022 et DF=27/08/2022 de put(PTR) doivent etre Apres CF=30/08/2022 de sequence(Transfert du produit et stockage)</v-alert>
-              <v-alert v-model="alert" type="error">Conflit dans le recouvrement de date : enchainement des dates non respecté: DF=22/08/2022 de put(PA1) doit etre avant DD=19/08/2022 de put(PA2)</v-alert>
-              <v-alert v-model="alert" type="error">Conflit dans le recouvrement de date : enchainement des dates non respecté: DF=06/09/2022 de put(PM1) doit etre avant DD=25/08/2022 de put(PM2)</v-alert>
-              <v-alert v-model="alert" type="error">Conflit dans le recouvrement de date : enchainement des dates non respecté: DF=06/09/2022 de put(PM1) doit etre avant DD=26/08/2022 de while(PM2)</v-alert>
-
             <v-card-text>
+              <div v-if="this.msg == true">
+              <v-alert v-model="alert" type="success">Success !</v-alert>
+              </div>
+               <div v-if="this.msg == false">
+              <v-alert v-model="alert" type="error">{{this.conflits}}</v-alert>
+              </div>
                <div class=" text-center Rprimary--text">
             <h1>Save your scenario</h1>
             
@@ -351,7 +349,8 @@ export default ({
           nextNb: 2,
           select: 'none',
           ActivityChoice: ['Simple','Sequential','Parallel','UnderCondition','InLoop'],
-          conflits: ''
+          conflits: '',
+          msg: false
     }
    },
     watch: {
@@ -366,18 +365,21 @@ export default ({
     async Check() {
       const CONFLITS = 'http://localhost:8010/api/request/result';
       const response = await axios.get(CONFLITS)
-      .then(response => this.conflits = response.data)
-      console.log(this.conflits)
-        .catch(error => {
-      this.errorMessage = error.message;
-      console.error("There was an error!", error);
-    });
+      this.conflits = response.data
       console.log(response);
+      if(response.data == ''){
+        console.log('success !');
+        this.msg = true;
+      }else{
+        console.log(this.conflits);
+        //console.log('success !');
+      }
     },
     //SEND
     async send(xmlstring){
+      const headers = {'Content-Type': 'application/json;charset=utf-8'}
       const CONFLITS = 'http://localhost:8010/api/request/newXml';
-      const response = await axios.post(CONFLITS, xmlstring)
+      const response = await axios.post(CONFLITS, xmlstring, {headers: headers})
       console.log(response);
     },
     //ADD OBJECT to database
@@ -450,10 +452,12 @@ export default ({
         FileCreation: function(){
           var serializer = new XMLSerializer();
           var doc = document.implementation.createDocument("", "", null);
-          const pi = doc.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8"');
-          doc.insertBefore(pi, doc.firstChild);
+          /*const pi = doc.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8"');
+          doc.insertBefore(pi, doc.firstChild);*/
           var root = doc.createElement('process');
           root.setAttribute("name", this.processname);
+          root.setAttribute("DD", '');
+          root.setAttribute("DF", '');
           root.setAttribute("DUR", "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+0+"S");
           root.setAttribute("CD", '');
           root.setAttribute("CF", '');
@@ -952,10 +956,16 @@ export default ({
           root.setAttribute("DUR", durr);
           root.setAttribute("CD",cd);
           root.setAttribute("CF", cf);
-          
+
           var xmlString = serializer.serializeToString(doc);
           console.log(xmlString); 
-          this.send(xmlString);
+          var myStr = xmlString;
+          var newStr = xmlString.replace(/"/g, '\\"');
+          console.log( newStr );  // "this-is-a-test"
+          //var message = '{ "file" : " <employee><department>IT</department><firstName>Santosh</firstName><id>123</id><lastName>Devkate</lastName></employee> "}'
+          var message = '{"file" :"'+newStr+'"}';
+          console.log(message);
+          this.send(message);
         },
          //SEQUENCE/FLOW----------------------------------------------------
         GenStr: function(ActivityType, ActivityName, i){
@@ -965,6 +975,8 @@ export default ({
               // create sequence
             var tmp = doc.createElement("sequence");
             tmp.setAttribute("name", ActivityName);
+            tmp.setAttribute("DD", '');
+            tmp.setAttribute("DF", '');
             tmp.setAttribute("DUR", '');
             tmp.setAttribute("CD", this.arr[i].dateCD);
             tmp.setAttribute("CF", this.arr[i].dateCF);
@@ -975,6 +987,8 @@ export default ({
               // create flow
             var tmp = doc.createElement("flow");
             tmp.setAttribute("name", ActivityName);
+            tmp.setAttribute("DD", '');
+            tmp.setAttribute("DF", '');
             tmp.setAttribute("DUR", '');
             tmp.setAttribute("CD", this.arr[i].dateCD);
             tmp.setAttribute("CF", this.arr[i].dateCF);
@@ -1041,6 +1055,8 @@ export default ({
         GenIf: function(ActivityType, conditionIF, i){
           var doc = document.implementation.createDocument("", "", null);
           var iff = doc.createElement('if');
+            iff.setAttribute("DD", '');
+            iff.setAttribute("DF", '');
             iff.setAttribute("DUR",'');
             iff.setAttribute("CD", this.arr[i].dateCD);
             iff.setAttribute("CF", this.arr[i].dateCF);
@@ -1060,6 +1076,8 @@ export default ({
       GenWhile: function(conditionWhile, i){
         var doc = document.implementation.createDocument("", "", null);
         var whi = doc.createElement('while');
+            whi.setAttribute("DD", '');
+            whi.setAttribute("DF", '');
             whi.setAttribute("DUR", '');
             whi.setAttribute("CD", this.arr[i].dateCD);
             whi.setAttribute("CF", this.arr[i].dateCF);

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.xml.sax.InputSource;
 import org.springframework.http.HttpStatus;
@@ -44,17 +45,18 @@ public class requestController {
     }
     
     @PostMapping(path="/newXml",consumes = MediaType.ALL_VALUE)
-	public ResponseEntity<?> getDetails(@RequestBody newXml xml) {
+	public ResponseEntity<Object> getDetails(@RequestBody newXml xml) {
         
-                ResponseEntity<?> response = null;
+                ResponseEntity<Object> response = null;
     
                 
                 try {
     
                     response = ResponseEntity.status(HttpStatus.OK).body(xml);
-                    Document doc = convertStringToDocument(xml.getFile());
+                    Document doc = convertStringToDocument(xml.getFile()); 
+                    System.out.println(xml.getFile());
                     XMLOutputter xmlOutputter = new XMLOutputter();
-                   try(FileOutputStream fileOutputStream=new FileOutputStream("./demo/src/main/resources/static/test2.xml")){
+                   try(FileOutputStream fileOutputStream=new FileOutputStream("test2.xml")){
                     xmlOutputter.output(doc, fileOutputStream);
                    }
     
