@@ -244,15 +244,16 @@
         <!-- Affichage de la hierarchie -->
         <v-row>
           <v-col cols="12" md="6">
-            <v-card tile class="hierarchy2 elevation-6 mt-4 text-center d-flex flex-column align-center">
-              <v-list class="hier pa-10">
+            <v-card tile class="hierarchy2 elevation-6 mt-4 d-flex flex-column">
+              <v-list>
                 <div class="listitem">
-              <v-list-item class="blublu--text" v-for="(Act,index) in ActList" :key="Act.id">
+              <v-list-item class="blublu--text hier pa-2" v-for="(Act,index) in ActList" :key="Act.id">
               <v-list-item-action>
               <v-list-item-title> Name of the activity / object <v-icon dark>mdi-arrow-right-thin</v-icon>{{Act.title}}</v-list-item-title>
               <v-list-item-title> Execution type <v-icon dark>mdi-arrow-right-thin</v-icon> {{Act.name}}</v-list-item-title> 
               <v-list-item-title><v-icon dark color="green">mdi-timer-alert</v-icon> Must start at : {{Act.datecd}}</v-list-item-title>
               <v-list-item-title><v-icon dark color="red">mdi-timer-alert</v-icon> Must end at : {{Act.datecf}}</v-list-item-title>
+              <v-divider horizontal dark></v-divider>
               </v-list-item-action>  
               </v-list-item>
               </div>
@@ -454,6 +455,8 @@ export default ({
           var doc = document.implementation.createDocument("", "", null);
           /*const pi = doc.createProcessingInstruction('xml', 'version="1.0" encoding="UTF-8"');
           doc.insertBefore(pi, doc.firstChild);*/
+
+          //Create PROCESS ------------------------------------------------------------
           var root = doc.createElement('process');
           root.setAttribute("name", this.processname);
           root.setAttribute("DD", '');
@@ -463,13 +466,13 @@ export default ({
           root.setAttribute("CF", '');
           root.setAttribute("TC", 'Entre');
           root.setAttribute("InstantDebut", 0);
-          //verifier le contenu du tableau d'activites
+          //verifier le contenu du tableau d'activites-----------------------------------------------------
           for(var i=0; i < this.arr.length; i++){
             console.log(this.arr[i].nb, this.arr[i].Activity, this.arr[i].ActivityName, this.arr[i].dateDD, this.arr[i].dateDF, this.arr[i].dateCD, this.arr[i].dateCF, this.arr[i].duree, this.arr[i].Tcontrainte, this.arr[i].condition);
           }
-          //creation du fichier -----------------------
+          //creation du fichier ------------------------------------------------------------------------
           for(var i=1; i < this.arr.length; i++){
-            //Ajout de l'activite SEQUENCE -----------------------------------------------------------
+            //Ajout de l'activite SEQUENCE -------------------------------------------------------------
             if(this.arr[i].Activity == 'sequence'){
                   if(this.arr[i].state == 'Simple'){
                   var activite = this.GenStr('sequence', this.arr[i].ActivityName, i);
@@ -518,7 +521,7 @@ export default ({
                     //Si l'activite est un WHILE--------------------
                       if(this.arr[x].Activity == 'while'){
                     var t = this.GenWhile(this.arr[x].condition,x); 
-                    tmp.appendChild(t);
+                    tmp.appendChild(t); 
                    }
                    }else{
                     etat =false;
