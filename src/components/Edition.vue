@@ -354,13 +354,7 @@ export default ({
           msg: false
     }
    },
-    watch: {
-    alert(new_val){
-      if(new_val){
-        setTimeout(()=>{this.alert=false},3000)
-      }
-    }  
-  },
+   
    methods: {
     //CHECK
     async Check() {
@@ -524,50 +518,74 @@ export default ({
       durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+0+"S";
             if(element.nodeType==1){
               var j = element.childNodes.length;
+              var d = 0;
                 for(var t=0; t<j; t++){
-                  var element2 = element.childNodes[t];
+                  if(element.childNodes[t].tagName == 'condition'){
+                    var element2 = element.firstChild.nextSibling;
+                    j = j-1;
+                    }else{
+                      var element2 = element.childNodes[t];
+                    }
                   if(element2 != null){
                     if(element2.nodeType==1){
                     //si c'est un objet --------------------------------------------------------
                     if(element2.hasAttribute("TC") == false){
                        //calcul de duree de l'element --------------------------------------------------------------------------------
-                      const path1 = durr;
+                      //const path1 = durr;
                       const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
-                      const match1 = path1.match(pattern);
-                      element2 = element.childNodes[t];
+                      //const match1 = path1.match(pattern);
+                      if(element.childNodes[t].tagName == 'condition'){
+                          element2 = element.firstChild.nextSibling;
+                      }else{
+                        element2 = element.childNodes[t];
+                      }
                       const path2 = element2.firstElementChild.getAttribute('DUR');
                       const match2 = path2.match(pattern);
-                      var d = parseInt(match1.groups['seconds']) + parseInt(match2.groups['seconds']);
-                      
+                      if(element.tagName == 'sequence'|| element.tagName == 'while'){
+                        d = d + parseInt(match2.groups['seconds']);
+                      }else{
+                        d = Math.max(d, parseInt(match2.groups['seconds']));
+                      }
                      }else{
                         this.CalculStruct(element2);
                         const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
                         var ds = element2.getAttribute("DUR");
                         const match3 = ds.match(pattern);
                         ds = parseInt(match3.groups['seconds']);
+                        if(element2.tagName == 'sequence'|| element2.tagName == 'while'){
                         d = d + ds;
+                        }else{
+                        d = Math.max(d, ds);
+                        }
                      }
                    }
                   }
                 
               }
+              durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
             }
-            durr = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+d+"S";
+            
              element.setAttribute("DUR",durr);
+              if(element.firstChild.tagName == 'condition'){
+                    element2 = element.firstChild.nextSibling;
+                }else{
+                  element2 = element.firstChild;
+                }
               if(element2.hasAttribute("TC") == false){
-              element2 = element.childNodes[0];
               var dd = element2.firstElementChild.getAttribute('DD');
               element.setAttribute("DD",dd);
-              element2 = element.childNodes[j-1];
-              var df = element2.firstElementChild.getAttribute('DF');
-              element.setAttribute("DF",df);
               }else{
-              element2 = element.childNodes[0];
               var dd = element2.getAttribute('DD');
               element.setAttribute("DD",dd);
-              element2 = element.childNodes[j-1];
+              }
+              element2 = element.lastChild;
+              if(element2.hasAttribute("TC") == false){
+              var df = element2.firstElementChild.getAttribute('DF',df);
+              element.setAttribute("DF",df);
+              }else{
               var df = element2.getAttribute('DF',df);
               element.setAttribute("DF",df);
+              
               }
             
     },
@@ -607,7 +625,12 @@ export default ({
               var j = element.childNodes.length;
               var d = 0;
                 for(var t=0; t<j; t++){
-                  var element2 = element.childNodes[t];
+                    if(element.childNodes[t].tagName == 'condition'){
+                    var element2 = element.firstChild.nextSibling;
+                    j = j-1;
+                    }else{
+                      var element2 = element.childNodes[t];
+                    }
                   if(element2 != null){
                     if(element2.nodeType==1){
                     //si c'est un objet --------------------------------------------------------
@@ -616,17 +639,29 @@ export default ({
                       const path1 = durr;
                       const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
                       const match1 = path1.match(pattern);
-                      element2 = element.childNodes[t];
+                      if(element.childNodes[t].tagName == 'condition'){
+                          element2 = element.firstChild.nextSibling;
+                      }else{
+                        element2 = element.childNodes[t];
+                      }
                       const path2 = element2.firstElementChild.getAttribute('DUR');
                       const match2 = path2.match(pattern);
-                      d = d + parseInt(match2.groups['seconds']);
+                       if(element.tagName == 'sequence' || element.tagName == 'while'){
+                        d = d + parseInt(match2.groups['seconds']);
+                      }else{
+                        d = Math.max(d,parseInt(match2.groups['seconds']));
+                      }
                      }else{
                         this.CalculStruct(element2, durr);
                         const pattern = "P(?<year>(.+))Y(?<month>(.+))M(?<day>(.+))DT(?<hour>(.+))H(?<minute>(.+))M(?<seconds>(.+))+S";
                         var ds = element2.getAttribute("DUR");
                         const match3 = ds.match(pattern);
                         ds = parseInt(match3.groups['seconds']);
+                        if(element2.tagName == 'sequence'|| element2.tagName == 'while'){
                         d = d + ds;
+                        }else{
+                        d = Math.max(d, ds);
+                        }
                      }
                    }
                   }
@@ -636,8 +671,13 @@ export default ({
                 durrRP = "P"+0+"Y"+0+"M"+0+"DT"+0+"H"+0+"M"+durrP+"S";
                 
             }
+               
               element.setAttribute("DUR",durr);
-              element2 = element.firstChild;
+              if(element.firstChild.tagName == 'condition'){
+                    element2 = element.firstChild.nextSibling;
+                }else{
+                  element2 = element.firstChild;
+                }
               if(element2.hasAttribute("TC") == false){
               var dd = element2.firstElementChild.getAttribute('DD');
               element.setAttribute("DD",dd);
